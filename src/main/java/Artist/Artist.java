@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:09
+ * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:11
  */
 
 public class Artist {
