@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Class represent a Sing Track with reference to artista and other data fc update 15/01/2025 15:16
+ * This Class represent a Sing Track with reference to artista and other data fc update 15/01/2025 16:04
  */
 
 public class Track {
@@ -84,9 +84,7 @@ public class Track {
     public void setId(String id) {
         this.id = id;
     }
-    //public void setArtistId(String artistId) {
-     //   this.artistId = artistId;
-    //}
+
 
     public void setGenre(String genre) {
         this.genre = genre;
