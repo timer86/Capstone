@@ -60,7 +60,7 @@ public class Artist {
                 "artist_id :" + name +
                 "genre :" + genre;
     }
-
+ //
 
 
 }
