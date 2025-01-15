@@ -3,16 +3,13 @@ package Artist;
 import Track.Track;
 
 public class Artist {
-    String id;
-    String name;
-    String genre;
-    String country;
+    private String id;
+    private String name;
+    private String genre;
+    private String country;
+    private Track tracks;
 
-
-    public Artist(){
-    }
-
-    public void AddArtist(String id, String name, String genre, String country, String song) {
+    public Artist(String id, String name, String genre, String country, String song) {
         this.id = id;
         this.name = name;
         this.genre = genre;
@@ -21,19 +18,18 @@ public class Artist {
         //Track track = new Track(song,name);
     }
 
+    public interface AddTrack{
+        String getTrackId();
+        String getArtistId();
 
+    }
 
     public Boolean IsUnique(String name){
         return true;
     }
 
-    public String[] getIds(String name){
-        return
-
-    }
 
     public String getId(String name) {
         return this.id;
-
     }
 }
