@@ -5,80 +5,94 @@ import Track.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * This Class represent a Sing Track with reference to artista and other data
+ * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:09
  */
 
 public class Artist {
     /**
      * Variables:
      * id : Artist unique id
-     * name: artist name
-     * genre: artist genre
+     * name: Artist name
+     * genre: Artist genre
+     * idTrack: List of all TrackId for the Artist
      */
+
     private String id;
-    private String idTrack;
     private String name;
     private String genre;
-    private List<Track> tracks = new ArrayList<Track>();
+    private List<String> idTrack;
 
-    public Artist(String id, String idTrack, String name, String genre,Track track) {
+    public Artist(String id,String name, String genre) {
         this.id = id;
-        this.idTrack = idTrack;
         this.name = name;
         this.genre = genre;
-        this.tracks.add(track);
+        this.idTrack = new ArrayList<>();
     }
 
 
-
-    /** Starting getter Method **/
+/** Starting getter Method **/
     public String getId() {
         return id;
     }
-    public String getIdTrack() {
-        return idTrack;
-    }
-    public String getName() {
-        return name;
-    }
+
     public String getGenre() {
         return genre;
     }
 
+    public String getName() {
+        return name;
+    }
+    public List<String> getTrackIds() {
+        return idTrack;
+    }
 
 
-    /** Starting setter Method **/
+
+/** Starting setter Method **/
+
     public void setId(String id) {
-        this.id = id;
+    this.id = id;
     }
-    public void setIdTrack(String idTrack) {
-        this.idTrack = idTrack;
+
+    public void setGenre(String genre) {
+    this.genre = genre;
     }
+
     public void setName(String name) {
         this.name = name;
     }
-    public void setGenre(String genre) {
-        this.genre = genre;
+
+    public void setTrackIds(List<String> idTrack) {
+        this.idTrack = idTrack;
     }
-    public void AddTrack(Track track) {
-        this.tracks.add(track);
+
+
+/** Starting Add - Remove Method **/
+
+    public void  addIdTrack(String idTrack) {
+        if (!this.idTrack.contains(idTrack)) {
+            this.idTrack.add(idTrack);
+        }
     }
-    public void RemoveTrack(Track track) {
-        this.tracks.remove(track);
+
+    public void removeIdTrack(String idTrack)
+    {
+        if (!this.idTrack.contains(idTrack)) {
+            this.idTrack.remove(idTrack);
+        }
     }
+
 
     @Override
     public String toString() {
-        return "Artist(" +
-                "id" + id +
-                "artist_id :" + name +
-                "genre :" + genre;
+        return "Track { " +
+                "id='" + id + "', " +
+                "name='" + name + "', " +  // se hai una lista
+                "genre='" + genre + "', ";
     }
 
 
-    public void setTracks(List<Track> tracks) {
-        this.tracks = tracks;
-    }
+
+
 }
