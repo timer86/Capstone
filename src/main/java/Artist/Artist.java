@@ -9,7 +9,10 @@ public class Artist {
     String country;
 
 
-    public Artist(String id, String name, String genre, String country, String song) {
+    public Artist(){
+    }
+
+    public void AddArtist(String id, String name, String genre, String country, String song) {
         this.id = id;
         this.name = name;
         this.genre = genre;
@@ -18,18 +21,19 @@ public class Artist {
         //Track track = new Track(song,name);
     }
 
-    public Artist(String id, String name, String country, String song) {
-        this.id = id;
-        this.name = name;
-        this.country = country;
-        //Track track = new Track(song,name);
+
+
+    public Boolean IsUnique(String name){
+        return true;
     }
-    //public AddArtist(String name) {
 
-    //}
+    public String[] getIds(String name){
+        return
 
-    //public getId(String name) {
+    }
 
+    public String getId(String name) {
+        return this.id;
 
-    //}
+    }
 }
