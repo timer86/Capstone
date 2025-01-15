@@ -2,10 +2,11 @@ package Track;
 
 import Artist.Artist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Class represent a Sing Track with reference to artista and other data fc update 15/01
+ * This Class represent a Sing Track with reference to artista and other data fc update 15/01/2025 14:42
  */
 
 public class Track {
@@ -19,20 +20,21 @@ public class Track {
      * title: track title
      */
     private String id;
-    private String artistId;
+    //private String artistId;
     private String genre;
     private int year;
     private String album;
     private String title;
-    private List<Artist> artists;
+    private List<String> artistIds;
 
     public Track(String id, String artistId, int year, String genre, String album, String title) {
         this.id = id;
-        this.artistId = artistId;
+       // this.artistId = artistId;
         this.year = year;
         this.genre = genre;
         this.album = album;
         this.title = title;
+        this.artistIds = new ArrayList<>();
     }
 
 
@@ -42,8 +44,18 @@ public class Track {
         return id;
    }
 
-    public String getArtistId() {
-        return artistId;
+   // public String getArtistId() {
+       // return artistId;
+   // }
+
+    public void  addArtistID(String artistId) {
+        if (!this.artistIds.contains(artistId)) {
+            this.artistIds.add(artistId);
+        }
+    }
+
+    public void removeArtistID(String artistId) {
+            this.artistIds.remove(artistId);
     }
 
     public String getGenre() {
@@ -60,13 +72,22 @@ public class Track {
         return title;
     }
 
+    public List<String> getArtistIds() {
+        return artistIds;
+    }
+
+    public void setArtistIds(List<String> artistIds) {
+        this.artistIds = artistIds;
+    }
+
     //Starting Setter Method
     public void setId(String id) {
         this.id = id;
     }
-    public void setArtistId(String artistId) {
-        this.artistId = artistId;
-    }
+    //public void setArtistId(String artistId) {
+     //   this.artistId = artistId;
+    //}
+
     public void setGenre(String genre) {
         this.genre = genre;
     }
@@ -82,14 +103,15 @@ public class Track {
 
     @Override
     public String toString() {
-        return "track(" +
-                "id" + id +
-                "artist_id :" + artistId +
-                "year : " + year +
-                "genre :" + genre +
-                "album :" + album +
-                "title :" + title + ")";
+        return "Track { " +
+                "id='" + id + "', " +
+                "artistIds='" + artistIds + "', " +  // se hai una lista
+                "year=" + year + ", " +
+                "genre='" + genre + "', " +
+                "album='" + album + "', " +
+                "title='" + title + "' }";
     }
+
 
 
 
