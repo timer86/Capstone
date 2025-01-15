@@ -84,9 +84,7 @@ public class Track {
     public void setId(String id) {
         this.id = id;
     }
-    //public void setArtistId(String artistId) {
-     //   this.artistId = artistId;
-    //}
+
 
     public void setGenre(String genre) {
         this.genre = genre;
