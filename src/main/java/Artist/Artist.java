@@ -1,13 +1,14 @@
 package Artist;
 
 import Track.Track;
+import java.util.List;
 
 public class Artist {
     private String id;
     private String name;
     private String genre;
     private String country;
-    private Track tracks;
+    private List<Track> track;
 
     public Artist(String id, String name, String genre, String country, String song) {
         this.id = id;
