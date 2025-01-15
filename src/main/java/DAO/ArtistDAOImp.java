@@ -12,7 +12,7 @@ public class ArtistDAOImp implements ArtistDAO{
         artists = new ArrayList<>();
         artists.add(new Artist("1", "Ligabue","POP"));
         artists.add(new Artist("2", "Bon-Jovi","ROCK"));
-        artists.add(new Artist("3", "Madonna","POP",));
+        artists.add(new Artist("3", "Madonna","POP"));
     }
     @Override
     public List<Artist> getAllArtist() {
