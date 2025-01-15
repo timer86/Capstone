@@ -14,6 +14,7 @@ public class Artist {
         this.name = name;
         this.genre = genre;
         this.country = country;
+        //
         //Track track = new Track(song,name);
     }
 
