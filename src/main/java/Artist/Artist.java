@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:11
+ * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:19
  */
 
 public class Artist {
@@ -31,7 +31,7 @@ public class Artist {
     }
 
 
-/** Starting getter Method **/
+/** Starting Get Method **/
     public String getId() {
         return id;
     }
@@ -49,7 +49,7 @@ public class Artist {
 
 
 
-/** Starting setter Method **/
+/** Starting Set Method **/
 
     public void setId(String id) {
     this.id = id;
@@ -68,7 +68,7 @@ public class Artist {
     }
 
 
-/** Starting Add - Remove Method **/
+/** Starting Add-Remove Method **/
 
     public void  addIdTrack(String idTrack) {
         if (!this.idTrack.contains(idTrack)) {
