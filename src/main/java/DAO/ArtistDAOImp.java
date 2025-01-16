@@ -10,17 +10,17 @@ public class ArtistDAOImp implements ArtistDAO{
 
     public ArtistDAOImp() {
         artists = new ArrayList<>();
-        artists.add(new Artist(1, "Ligabue","POP"));
-        artists.add(new Artist(2, "Bon-Jovi","ROCK"));
-        artists.add(new Artist(3, "Madonna","POP"));
+        artists.add(new Artist("1", "Ligabue","POP"));
+        artists.add(new Artist("2", "Bon-Jovi","ROCK"));
+        artists.add(new Artist("3", "Madonna","POP"));
     }
     @Override
     public List<Artist> getAllArtist() {
         return artists;
     }
     @Override
-    public Artist getArtistnameById(int id) {
-        return artists.get(id);
+    public Artist getArtistnameById(String id) {
+        return artists.stream().filter(artist -> artist.getId().equals(id)).findFirst().get();
     }
     @Override
     public void saveArtist(Artist artist) {

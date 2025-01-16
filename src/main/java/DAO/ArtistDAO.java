@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ArtistDAO {
         List<Artist> getAllArtist();
-        Artist getArtistnameById(int id);
+        Artist getArtistnameById(String id);
         void saveArtist(Artist artist);
         void deleteArtist(Artist artist);
     }
