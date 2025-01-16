@@ -6,7 +6,10 @@ import Track.Track;
 import Artist.Artist;
 import Track.MusicGenres;
 
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArtistService {
     private TrackDAO trackDao;
@@ -35,8 +38,10 @@ public class ArtistService {
             throw new IllegalArgumentException("The Genre " + genre + " is not allowed. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
         }
 
+        List<String> uniqueTrackIds = trackIds.stream().distinct().collect(Collectors.toList());
+
         // Verifica che tutte le tracce esistano
-        for (String trackId : trackIds) {
+        for (String trackId : uniqueTrackIds) {
             Track track = trackDao.getTrackById(trackId);
             if (track == null) {
                 throw new IllegalArgumentException("The Track with ID: " + trackId + " does not exist");
@@ -45,13 +50,13 @@ public class ArtistService {
 
         // Crea il nuovo artista
         Artist newArtist = new Artist(id, name, genre);
-        newArtist.setTrackIds(trackIds);
+        newArtist.setTrackIds(uniqueTrackIds);
 
         // Salva l'artista nel DAO
         Artist savedArtist = artistDao.createArtist(newArtist);
 
         // Aggiorna le tracce per aggiungere l'artista appena creato
-        for (String trackId : trackIds) {
+        for (String trackId : uniqueTrackIds) {
             Track track = trackDao.getTrackById(trackId);
             if (!track.getArtistIds().contains(id)) {
                 track.addArtistID(id);
@@ -61,6 +66,7 @@ public class ArtistService {
 
         return savedArtist;
     }
+
 
     public Artist updateArtist(Artist artist) {
         // Controlla che l'artista esista
