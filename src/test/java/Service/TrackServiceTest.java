@@ -247,4 +247,102 @@ public class TrackServiceTest {
         assertEquals(artistIds, capturedTrack.getArtistIds());
     }
 
+    @Test
+    public void testGetArtistById_Success() {
+        // Dati di esempio
+        String artistId = "A001";
+        Artist mockArtist = new Artist(artistId, "Bon Jovi", "Rock");
+        when(artistDao.getArtistById(artistId)).thenReturn(mockArtist);
+
+        // Test del metodo
+        Artist retrievedArtist = artistDao.getArtistById(artistId);
+
+        // Verifiche
+        assertNotNull(retrievedArtist, "The retrieved artist should not be null");
+        assertEquals(artistId, retrievedArtist.getId());
+        assertEquals("Bon Jovi", retrievedArtist.getName());
+        assertEquals("Rock", retrievedArtist.getGenre());
+    }
+
+    @Test
+    public void testGetTrackById_Success() {
+        // Dati di esempio
+        String trackId = "T001";
+        Track mockTrack = new Track(trackId, 2022, "Rock", "Rock Album", "Rock Song");
+        when(trackDAO.getTrackById(trackId)).thenReturn(mockTrack);
+
+        // Test del metodo
+        Track retrievedTrack = trackService.getTrackbyId(trackId);
+
+        // Verifiche
+        assertNotNull(retrievedTrack, "The retrieved track should not be null");
+        assertEquals(trackId, retrievedTrack.getId());
+        assertEquals("Rock", retrievedTrack.getGenre());
+        assertEquals("Rock Song", retrievedTrack.getTitle());
+    }
+
+    @Test
+    public void testGetTracksByArtist_Success() {
+        // Dati di esempio
+        String artistId = "A001";
+        List<String> trackIds = List.of("T001", "T002");
+        Artist mockArtist = new Artist(artistId, "Bon Jovi", "Rock");
+        mockArtist.setTrackIds(trackIds);
+
+        // Mock dell'artista e delle tracce
+        when(artistDao.getArtistById(artistId)).thenReturn(mockArtist);
+        when(trackDAO.getTrackById("T001")).thenReturn(new Track("T001", 2022, "Rock", "Rock Album", "Song 1"));
+        when(trackDAO.getTrackById("T002")).thenReturn(new Track("T002", 2021, "Rock", "Rock Album", "Song 2"));
+
+        // Test del metodo
+        Artist artist = artistDao.getArtistById(artistId);
+        List<Track> associatedTracks = artist.getTrackIds().stream()
+                .map(trackDAO::getTrackById)
+                .toList();
+
+        // Verifiche
+        assertNotNull(associatedTracks, "The list of associated tracks should not be null");
+        assertEquals(2, associatedTracks.size());
+        assertEquals("T001", associatedTracks.get(0).getId());
+        assertEquals("T002", associatedTracks.get(1).getId());
+    }
+
+    @Test
+    public void testCreateTrack_YearBefore1900_ThrowsException() {
+        String trackId = "T003";
+        int invalidYear = 1800; // Valore prima del 1900
+        String genre = "Rock";
+        String album = "Album 1";
+        String title = "Title 1";
+        List<String> artistIds = List.of("A001");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(trackId, invalidYear, genre, album, title, artistIds)
+        );
+
+        assertEquals("The Year cannot be less than 1900", exception.getMessage());
+    }
+
+    @Test
+    public void testCreateTrack_YearInFuture_ThrowsException() {
+        String trackId = "T004";
+        int futureYear = 3000; // Valore futuro
+        String genre = "Pop";
+        String album = "Album 2";
+        String title = "Title 2";
+        List<String> artistIds = List.of("A002");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(trackId, futureYear, genre, album, title, artistIds)
+        );
+
+        assertEquals("The Year cannot be in the Future", exception.getMessage());
+    }
+
+
+
+
+
+
+
 }
