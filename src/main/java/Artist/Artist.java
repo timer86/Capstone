@@ -18,12 +18,12 @@ public class Artist {
      * idTrack: List of all TrackId for the Artist
      */
 
-    private String id;
+    private Integer id;
     private String name;
     private String genre;
     private List<String> idTrack;
 
-    public Artist(String id,String name, String genre) {
+    public Artist(Integer id,String name, String genre) {
         this.id = id;
         this.name = name;
         this.genre = genre;
@@ -32,7 +32,7 @@ public class Artist {
 
 
 /** Starting Get Method **/
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -51,7 +51,7 @@ public class Artist {
 
 /** Starting Set Method **/
 
-    public void setId(String id) {
+    public void setId(Integer id) {
     this.id = id;
     }
 
@@ -87,7 +87,7 @@ public class Artist {
     @Override
     public String toString() {
         return "Track { " +
-                "id='" + id + "', " +
+                "id='" + id.toString() + "', " +
                 "name='" + name + "', " +  // se hai una lista
                 "genre='" + genre + "', ";
     }

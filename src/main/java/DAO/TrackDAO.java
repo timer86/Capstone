@@ -6,7 +6,7 @@ import java.util.*;
 //16:04
 public interface TrackDAO {
     Track createTrack(Track track);
-    Track getTrackById(String id);
+    Track getTrackById(Integer id);
     List<Track> getAllTracks();
     Track updateTrack(Track track);
     boolean deleteTrack(String id);
