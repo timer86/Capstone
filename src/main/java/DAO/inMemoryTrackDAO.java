@@ -21,7 +21,7 @@ public class inMemoryTrackDAO implements TrackDAO{
     }
 
     @Override
-    public Track getTrackById(String id) {
+    public Track getTrackById(Integer id) {
         return trackMap.get(id);
     }
 
