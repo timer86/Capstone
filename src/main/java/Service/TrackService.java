@@ -19,6 +19,11 @@ public class TrackService {
 
     public Track createTrack(String id, int year, String genre, String album, String title, List<String> artistIds ) {
         int currentYear = java.time.LocalDate.now().getYear();
+
+        if (id == null || id.trim().isEmpty()){
+            throw new IllegalArgumentException("Track id cannot be null or empty");
+        }
+
         if (year < 1900){
            throw new IllegalArgumentException("The Year cannot be less than 1900");
         }
@@ -41,7 +46,7 @@ public class TrackService {
         for (String artistId : artistIds){
             Artist artist = artistDao.getArtistnameById(artistId);
             if (artist == null){
-                throw new IllegalArgumentException("The Artist" + artist + "with this ID: " + artistId + " does not exist");
+                throw new IllegalArgumentException("The Artist with this ID: " + artistId + " does not exist");
             }
 
         }
