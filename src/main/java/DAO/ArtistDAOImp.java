@@ -20,6 +20,7 @@ public class ArtistDAOImp implements ArtistDAO{
     }
     @Override
     public Artist getArtistnameById(String id) {
+        return artists.get(id);
         return artists.stream().filter(artist -> artist.getId().equals(id)).findFirst().get();
     }
     @Override
