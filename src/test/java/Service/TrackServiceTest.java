@@ -87,4 +87,48 @@ public class TrackServiceTest {
         verifyNoInteractions(trackDAO);
     }
 
+
+
+    @Test
+    public void testCreateTrack_WithMultipleArtists() {
+        // Dati di esempio
+        String trackId = "T001";
+        int year = 2022;
+        String genre = "Rock";
+        String album = "Rock Album";
+        String title = "Rock Song";
+        List<String> artistIds = List.of("A001", "A002");
+
+        // Mock degli artisti esistenti
+        when(artistDao.getArtistById("A001")).thenReturn(new Artist("A001", "Artist 1", "Rock"));
+        when(artistDao.getArtistById("A002")).thenReturn(new Artist("A002", "Artist 2", "Rock"));
+
+        // Mock del track DAO
+        Track trackToSave = new Track(trackId, year, genre, album, title);
+        trackToSave.setArtistIds(artistIds);
+        when(trackDAO.createTrack(any(Track.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Test del metodo
+        Track createdTrack = trackService.createTrack(trackId, year, genre, album, title, artistIds);
+
+        // Verifiche
+        assertNotNull(createdTrack);
+        assertEquals(trackId, createdTrack.getId());
+        assertEquals(artistIds, createdTrack.getArtistIds());
+
+        // Verifica che ogni artista sia stato aggiornato esattamente una volta
+        verify(artistDao).getArtistById("A001");
+        verify(artistDao).getArtistById("A002");
+        verify(artistDao, times(1)).updateArtist(argThat(artist -> artist.getTrackIds().contains(trackId)));
+        verify(artistDao, times(1)).updateArtist(argThat(artist -> artist.getId().equals("A001")));
+        verify(artistDao, times(1)).updateArtist(argThat(artist -> artist.getId().equals("A002")));
+
+        // Verifica che il track sia stato salvato
+        verify(trackDAO).createTrack(any(Track.class));
+    }
+
+
+
+
+
 }

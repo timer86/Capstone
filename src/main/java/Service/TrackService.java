@@ -5,7 +5,11 @@ import Track.Track;
 import Artist.Artist;
 import Track.MusicGenres;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 
 public class TrackService {
@@ -43,17 +47,29 @@ public class TrackService {
             throw new IllegalArgumentException("The Title cannot be empty");
         }
 
-        for (String artistId : artistIds){
+        List<String> uniqueArtistIds = artistIds.stream().distinct().toList();
+        Map<String, Artist> artistMap = new HashMap<>();
+        for (String artistId : uniqueArtistIds){
             Artist artist = artistDao.getArtistById(artistId);
             if (artist == null){
                 throw new IllegalArgumentException("The Artist with this ID: " + artistId + " does not exist");
             }
-
+            artistMap.put(artistId, artist);
         }
 
-        Track newTrack = new Track(id, year, genre, album,title);
+        Track newTrack = new Track (id, year, genre, album, title);
         newTrack.setArtistIds(artistIds);
-        return trackDao.createTrack(newTrack);
+
+        Track savedTrack = trackDao.createTrack(newTrack);
+
+        for (Artist artist : artistMap.values()){
+            if (!artist.getTrackIds().contains(id)){
+                artist.addIdTrack(id);
+                System.out.println("Updating artist: " + artist.getId());
+                artistDao.updateArtist(artist);
+            }
+        }
+        return savedTrack;
 
     }
     public Track getTrackbyId(String id) {
