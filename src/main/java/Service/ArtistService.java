@@ -58,7 +58,7 @@ public class ArtistService {
     }
 
     public List<Artist> getAllArtists() {
-        return artistDao.getAllArtist();
+        return artistDao.getAllArtists();
     }
 
     public Artist updateArtist(Artist artist) {
