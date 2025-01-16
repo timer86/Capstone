@@ -44,7 +44,7 @@ public class TrackService {
         }
 
         for (String artistId : artistIds){
-            Artist artist = artistDao.getArtistnameById(artistId);
+            Artist artist = artistDao.getArtistById(artistId);
             if (artist == null){
                 throw new IllegalArgumentException("The Artist with this ID: " + artistId + " does not exist");
             }
