@@ -39,7 +39,7 @@ public class ArtistService {
         for (String trackId : trackIds){
             Track track = trackDao.getTrackById(trackId);
             if (track == null){
-                throw new IllegalArgumentException("The Track " + track + " with this ID: " + trackId + " does not exist");
+                throw new IllegalArgumentException("The Track with this ID: " + trackId + " does not exist");
             }
 
         }
