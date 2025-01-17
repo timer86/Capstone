@@ -138,7 +138,7 @@ public class MusicApplication {
                     List<String> artistidlist = new ArrayList<String>();
                     artistidlist = track.getArtistIds(track_id);
                     for (int i = 0; i < artistidlist.size(); i++) {
-                        Artist artist = new Artist("","","");
+                        Artist artist = new Artist("","","",List.of());
                         System.out.println(artist.getNameById(artistidlist(i))+", ");
                     }
                     ans_TR = input_TR.next("Do you want to update or create a new track?\n 1 - Update\n 2 - Create");
@@ -223,7 +223,7 @@ public class MusicApplication {
                 }
 
 
-                Artist artist = new Artist("","","");
+                Artist artist = new Artist("","","",List.of());
                 /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
                 for (int i = 0; i < artistlist.size(); i++) {
                     single_artist = artistlist.get(i);
@@ -255,7 +255,7 @@ public class MusicApplication {
                 System.out.println("3 -  Album: " + track.getAlbum(track_id));
                 System.out.print("4 -  Artist list: ");
                 for (int i = 0; i < track.getArtistIds(track_id).size(); i++) {
-                    Artist artist = new Artist("","","");
+                    Artist artist = new Artist("","","",List.of());
                     System.out.print(artist.getNameById(track.getArtistIds(i)+", ");
                 }
                 ans_TR=input_TR.next();
@@ -331,7 +331,7 @@ public class MusicApplication {
                         }
 
 
-                        Artist artist = new Artist("","","");
+                        Artist artist = new Artist("","","",List.of());
                         /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
                         for (int i = 0; i < artistlist.size(); i++) {
                             single_artist = artistlist.get(i);
@@ -401,8 +401,6 @@ public class MusicApplication {
         for(int i=1 ; i<=10 ; i++){
             System.out.print("*");
         }
-        System.out.println(" ");
-
 
 
 
