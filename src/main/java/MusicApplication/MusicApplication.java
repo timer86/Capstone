@@ -1,10 +1,14 @@
 package MusicApplication;
 import Track.MusicGenres;
+import Artist.Artist;
+import Track.Track;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.time.*;
+import java.util.InputMismatchException;
 
 public class MusicApplication {
     public static void main(String[] args) {
@@ -84,28 +88,32 @@ public class MusicApplication {
 
     }
 
-    public static Boolean updateTrack (){
+    public static Boolean updateTrack () {
         Scanner input_TR = new Scanner(System.in);
+
         String ans_TR = "";
         String album = "";
         String title = "";
         String genre = "";
-        int year = 1900;
-        List<String> artists = new ArrayList<String>();
+        int yyyy = 1900;
 
-        for(int i=1 ; i<=10 ; i++){
+        List<String> artistlist = new ArrayList<String>();
+        String single_artist = "";
+
+
+        for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
         System.out.println("  Welcome to the Music Application - UPDATE TRACK Section  ");
-        for(int i=1 ; i<=10 ; i++){
+        for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
         boolean update_TR_loop = true;
-        while(update_TR_loop){
+        while (update_TR_loop) {
 
             /*TITLE - NOT ALLOWED EMPTY*/
             boolean loop = true;
-            while(loop) {
+            while (loop) {
                 title = input_TR.next("Please provide the TITLE of the Track");
                 if (!title.isEmpty()) {
                     loop = false;
@@ -116,19 +124,19 @@ public class MusicApplication {
 
             /*ALBUM - IF EMPTY IS A SINGLE TRACK*/
             album = input_TR.next("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - let empty");
-            if (album.isEmpty()){
+            if (album.isEmpty()) {
                 album = "SINGLE";
             }
 
             /*GENRE - ALLOWED ONLY GENRE IN MUSICGENRES LIST*/
             loop = true;
-            while(loop) {
+            while (loop) {
                 genre = input_TR.next("Please provide the GENRE of the Track");
                 if (MusicGenres.ALLOWED_GENRES.contains(genre)) {
                     loop = false;
                 } else {
                     System.out.println("INPUT ERROR - Please enter a valid Genre");
-                    for(int i=0;i<MusicGenres.ALLOWED_GENRES.size();i++){
+                    for (int i = 0; i < MusicGenres.ALLOWED_GENRES.size(); i++) {
                         System.out.println(MusicGenres.ALLOWED_GENRES.get(i));
                     }
                 }
@@ -136,18 +144,60 @@ public class MusicApplication {
 
             /*YEAR - ALLOWED ONLY 1900 - today*/
             loop = true;
-            while(loop) {
-                year = input_TR.nextInt("Please provide the YEAR of the Track");
-                if ()) {
+            while (loop) {
+                try {
+                    System.out.print("Please provide the YEAR of the Track");
+                    yyyy = input_TR.nextInt();
+                } catch (InputMismatchException ignored) {
+                    yyyy = 0;
+                }
+
+                int year = Year.now().getValue();
+                if (yyyy >= 1990 && yyyy <= year) {
                     loop = false;
                 } else {
-                    System.out.println("INPUT ERROR - Please enter a valid Genre");
-                    for(int i=0;i<MusicGenres.ALLOWED_GENRES.size();i++){
-                        System.out.println(MusicGenres.ALLOWED_GENRES.get(i));
-                    }
+                    System.out.println("INPUT ERROR - Please enter a valid Year from 1900 to " + year);
                 }
             }
 
+            /*ARTIST LIST - EMPTY to finish*/
+            loop = true;
+            while (loop) {
+                single_artist = input_TR.next("Please provide the ARTIST of the Track " + title);
+                /* 1st Artist cannot be empty*/
+                if (!single_artist.isEmpty()) {
+                    artistlist.add(single_artist);
+                    loop = false;
+                } else {
+                    System.out.println("INPUT ERROR - Please provide at least 1 Artist name");
+                }
+            }
+
+            loop = true;
+            while (loop) {
+                System.out.println("please provide additional ARTIST of the Track " + title);
+                for (int i = 0; i < artistlist.size(); i++) {
+                    System.out.println(artistlist.get(i));
+                }
+                System.out.println("Let empty if there is no more Artist to add");
+                single_artist = input_TR.next();
+                if (!single_artist.isEmpty()) {
+                    artistlist.add(single_artist);
+                } else {
+                    loop = false;
+                }
+            }
+
+
+
+            /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
+            for (int i = 0; i < artistlist.size(); i++) {
+                single_artist = artistlist.get(i);
+                String id = Artist.getIdByName(single_artist);
+
+
+
+            }
 
         }
 

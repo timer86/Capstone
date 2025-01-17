@@ -47,7 +47,9 @@ public class Artist {
         return idTrack;
     }
 
-
+    public String getIdByName(String name){
+        return this.id;
+    }
 
 /** Starting Set Method **/
 
