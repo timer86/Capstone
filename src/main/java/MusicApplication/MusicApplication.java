@@ -196,7 +196,6 @@ public class MusicApplication {
                 String id = Artist.getIdByName(single_artist);
 
 
-
             }
 
         }
