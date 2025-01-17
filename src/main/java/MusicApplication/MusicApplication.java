@@ -37,7 +37,7 @@ public class MusicApplication {
                         main_loop = updateMusicMenu();
                     case "2":
                         loop = false;
-
+                        main_loop = consultMusicMenu()
                     case "e","E":
                         loop = false;
                         main_loop = false;
@@ -53,6 +53,7 @@ public class MusicApplication {
     public static Boolean updateMusicMenu (){
         Scanner input_UM = new Scanner(System.in);
         String ans_UM = "";
+        Boolean choose = false;
         for(int i=1 ; i<=10 ; i++){
             System.out.print("*");
         }
@@ -68,12 +69,13 @@ public class MusicApplication {
             switch(ans_UM){
                 case "1":
                     update_MM_loop = updateTrack();
+                    choose = update_MM_loop;
                 case "2":
                     update_MM_loop = updateArtist();
-                    ;
+                    choose = update_MM_loop;
                 case "0":
                     update_MM_loop = false;
-                    return true;
+                    choose = true;
                     break;
                 case "e","E":
                     update_MM_loop = false;
@@ -84,8 +86,7 @@ public class MusicApplication {
             }
 
         }
-
-
+    return choose;
     }
 
     public static Boolean updateTrack () {
@@ -138,15 +139,17 @@ public class MusicApplication {
                         Artist artist = new Artist("","","");
                         System.out.println(artist.getNameById(track.getArtistIds(i)+", ");
                     }
-                    ans_TR = input_TR.next("Do you want to update or create a new Track?\n 1 - Update\n 2 - Create");
+                    ans_TR = input_TR.next("Do you want to update or create a new track?\n 1 - Update\n 2 - Create");
                     switch(ans_TR){
                         case "1","2":
-                            update_TR_loop = false;
+                            loop = false;
                         default:
                             System.out.println("INPUT ERROR - Please enter a valid option");
                     }
                 }
             }
+
+
             /* CREATE A NEW TRUCK */
             if (ans_TR=="2"){
 
@@ -356,26 +359,54 @@ public class MusicApplication {
                 }
 
             }
-        }
-        Boolean loop=true;
-        while (loop) {
-            String ans = input_TR.next("Jobs Done\n 1 - Update new Track \n E - for Exit\n 0 - Previous menu");
-            switch (ans_TR){
-                case "1":
-                    loop = false;
-                case "E":
-                    loop = false;
-                    choose = false;
-                    return false;
-                case "0":
-                    loop = false;
-                    choose = false;
-                    return true;
-                default:
-                    System.out.println("INPUT ERROR - Please enter a valid option");
+
+
+            Boolean loop=true;
+            while (loop) {
+                String ans = input_TR.next("Jobs Done\n 1 - Update new Track \n E - for Exit\n 0 - Previous menu");
+                switch (ans_TR){
+                    case "1":
+                        loop = false;
+                    case "E":
+                        loop = false;
+                        update_TR_loop = false;
+                        choose = false;
+                    case "0":
+                        loop = false;
+                        update_TR_loop = false;
+                        choose = true;
+                    default:
+                        System.out.println("INPUT ERROR - Please enter a valid option");
+                }
             }
         }
 
         return choose;
     }
+
+    public static Boolean updateArtist (){
+
+    }
+
+    public static Boolean consultMusicMenu(){
+        Scanner input_CM = new Scanner(System.in);
+        String ans_CM = "";
+        Boolean choose = false;
+        for(int i=1 ; i<=10 ; i++){
+            System.out.print("*");
+        }
+        System.out.println("  Welcome to the Music Application - CONSULT Section  ");
+        for(int i=1 ; i<=10 ; i++){
+            System.out.print("*");
+        }
+        System.out.println(" ");
+
+
+
+
+        return choose;
+    }
+
+
 }
+
