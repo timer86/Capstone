@@ -6,13 +6,13 @@ import Artist.Artist;
 import Track.MusicGenres;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import java.util.stream.Collectors;
 
 
 public class TrackService {
+    private final List<Track> tracks = new ArrayList<>();
     private TrackDAO trackDao;
     private ArtistDAO artistDao;
 
@@ -24,8 +24,12 @@ public class TrackService {
     public Track createTrack(String id, int year, String genre, String album, String title, List<String> artistIds ) {
         int currentYear = java.time.LocalDate.now().getYear();
 
-        if (id == null || id.trim().isEmpty()){
-            throw new IllegalArgumentException("Track id cannot be null or empty");
+        if (id  == null || id.trim().isEmpty()) {
+            id = generateTrackId(title);
+            System.out.println(id);
+        }
+        if (artistIds == null || artistIds.isEmpty()) {
+            throw new IllegalArgumentException("Artist IDs cannot be null or empty");
         }
 
         if (year < 1900){
@@ -56,8 +60,7 @@ public class TrackService {
             }
             artistMap.put(artistId, artist);
         }
-
-        Track newTrack = new Track (id, year, genre, album, title);
+        Track newTrack = new Track (id, year, genre, album, title,artistIds);
         newTrack.setArtistIds(artistIds);
 
         Track savedTrack = trackDao.createTrack(newTrack);
@@ -71,6 +74,31 @@ public class TrackService {
         }
         return savedTrack;
 //
+    }
+
+    public Track getTrackByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty");
+        }
+
+        return trackDao.getAllTracks().stream()
+                .filter(track -> track.getTitle().equalsIgnoreCase(title))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Track with title " + title + " does not exist"));
+    }
+
+    public List<Track> getTracksByArtistID(String artistId) {
+        if (artistId == null || artistId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Artist ID cannot be null or empty");
+        }
+        return trackDao.getAllTracks().stream()
+                .filter(track -> track.getArtistIds().contains(artistId))
+                .toList();
+    }
+
+    private String generateTrackId(String name) {
+        // Genera un ID unico basato sul nome e sul timestamp
+        return name.replaceAll("\\s+", "").toUpperCase() + "_" + System.currentTimeMillis();
     }
     public Track getTrackbyId(String id) {
         Track track = trackDao.getTrackById(id);

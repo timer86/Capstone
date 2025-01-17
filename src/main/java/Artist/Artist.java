@@ -23,7 +23,7 @@ public class Artist {
     private String genre;
     private List<String> idTrack;
 
-    public Artist(String id,String name, String genre) {
+    public Artist(String id,String name, String genre, List<String> idTrack) {
         this.id = id;
         this.name = name;
         this.genre = genre;
@@ -63,8 +63,8 @@ public class Artist {
         this.name = name;
     }
 
-    public void setTrackIds(List<String> idTrack) {
-        this.idTrack = idTrack;
+    public void setTrackIds(List<String> trackIds) {
+        this.idTrack = new ArrayList<>(trackIds); // Converte in lista mutabile
     }
 
 

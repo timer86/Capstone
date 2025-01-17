@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,13 +29,6 @@ public class ArtistServiceTest {
         trackDao = Mockito.mock(TrackDAO.class);
         artistDAO = Mockito.mock(ArtistDAO.class);
         artistService = new ArtistService(trackDao,artistDAO);
-    }
-
-    @Test
-    public void testCreateArtist_InvalidID_ThrowsException(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> artistService.createArtist(null, "Test Artist","Rock",List.of("T001"))
-        );
-        assertEquals(exception.getMessage(), "Artist ID cannot be null or empty");
     }
 
 
@@ -73,8 +67,8 @@ public class ArtistServiceTest {
     @Test
     public void testCreateArtist_SuccessSystem(){
         // Mock of existent Track
-        when(trackDao.getTrackById("T001")).thenReturn(new Track("T001",2022,"Rock","Toxicity","Chop Suey"));
-        when(trackDao.getTrackById("T002")).thenReturn(new Track("T002",2023, "Rock","Steal this Album","Innervision"));
+        when(trackDao.getTrackById("T001")).thenReturn(new Track("T001",2022,"Rock","Toxicity","Chop Suey",List.of()));
+        when(trackDao.getTrackById("T002")).thenReturn(new Track("T002",2023, "Rock","Steal this Album","Innervision",List.of()));
         //Mock DAO Artist
         when(artistDAO.createArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
         //Method Test
@@ -98,12 +92,12 @@ public class ArtistServiceTest {
     @Test
     public void testCreateArtist_SuccessCelentano() {
         // Mock of existent Track
-        when(trackDao.getTrackById("T003")).thenReturn(new Track("T003", 1950, "Neomelodic", "Una Carezza in un Pugno", "Azzurro"));
-        when(trackDao.getTrackById("T004")).thenReturn(new Track("T004", 2024, "Neomelodic", "Amore No", "Amore No"));
+        when(trackDao.getTrackById("T003")).thenReturn(new Track("T003", 1950, "Neomelodic", "Una Carezza in un Pugno", "Azzurro", List.of()));
+        when(trackDao.getTrackById("T004")).thenReturn(new Track("T004", 2024, "Neomelodic", "Amore No", "Amore No", List.of()));
         //Mock DAO Artist
         when(artistDAO.createArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
         //Method Test
-        Artist createdartist1 = artistService.createArtist("A002", "Adriano Celentano", "Neomelodic", List.of("T003", "T004"));
+        Artist createdartist1 = artistService.createArtist("A0011","Adriano Celentano", "Neomelodic", List.of("T003", "T004"));
 
 
         //Verification
@@ -123,14 +117,14 @@ public class ArtistServiceTest {
     @Test
 
     public void testDeleteArtist_success(){
-        Artist existingArtist = new Artist("A001","AC/DC","Rock");
+        Artist existingArtist = new Artist("A001","AC/DC","Rock", new ArrayList<>());
         existingArtist.setTrackIds(List.of("T001","T002"));
 
         when(artistDAO.getArtistById("A001")).thenReturn(existingArtist);
         when(artistDAO.deleteArtist("A001")).thenReturn(true);
 
-        Track mockTrack1 = new Track("T001",2023,"Rock","Steal this Album","Innervision");
-        Track mockTrack2 = new Track("T002",2024,"Rock","Toxicity","Toxicity");
+        Track mockTrack1 = new Track("T001",2023,"Rock","Steal this Album","Innervision",List.of());
+        Track mockTrack2 = new Track("T002",2024,"Rock","Toxicity","Toxicity",List.of());
         when (trackDao.getTrackById("T001")).thenReturn(mockTrack1);
         when (trackDao.getTrackById("T002")).thenReturn(mockTrack2);
 
@@ -146,7 +140,7 @@ public class ArtistServiceTest {
 
     @Test
     public void testDeleteArtist_noTracks_Success() {
-        Artist existingArtist = new Artist("A001","AC/DC","Rock");
+        Artist existingArtist = new Artist("A001","AC/DC","Rock", new ArrayList<>());
         existingArtist.setTrackIds(List.of());
         when(artistDAO.getArtistById("A001")).thenReturn(existingArtist);
         when(artistDAO.deleteArtist("A001")).thenReturn(true);
@@ -169,7 +163,7 @@ public class ArtistServiceTest {
     @Test
     public void testUpdateArtist_ArtistDoesNotExist_ThrowsException(){
         when (artistDAO.getArtistById("A001")).thenReturn(null);
-        Artist artistToUpdate = new Artist("A001","AC/DC","Rock");
+        Artist artistToUpdate = new Artist("A001","AC/DC","Rock",new ArrayList<>());
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
                 artistService.updateArtist(artistToUpdate)
         );
@@ -179,17 +173,36 @@ public class ArtistServiceTest {
 
     @Test
     public void testUpdateArtist_Success() {
-        Artist existingArtist = new Artist("A001","AC/DC","Rock");
+        Artist existingArtist = new Artist("A001","AC/DC","Rock", new ArrayList<>());
         when(artistDAO.getArtistById("A001")).thenReturn(existingArtist);
         when(artistDAO.updateArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Artist updateArtist = artistService.updateArtist(new Artist("A001", "Update Artist", "Pop"));
+        Artist updateArtist = artistService.updateArtist(new Artist("A001", "Update Artist", "Pop",new ArrayList<>()));
 
         assertNotNull(updateArtist);
         assertEquals("A001",updateArtist.getId());
         assertEquals("Update Artist", updateArtist.getName());
         assertEquals("Pop", updateArtist.getGenre());
         verify(artistDAO).updateArtist(any(Artist.class));
+    }
+
+
+
+    @Test
+    public void testCreateArtist_AutoGeneratedId() {
+        // Mock delle tracce esistenti
+        when(trackDao.getTrackById("T001")).thenReturn(new Track("T001", 2023, "Rock", "Album 1", "Song 1", List.of()));
+        when(trackDao.getTrackById("T002")).thenReturn(new Track("T002", 2023, "Rock", "Album 2", "Song 2", List.of()));
+
+        // Mock del DAO degli artisti
+        when(artistDAO.createArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Metodo da testare
+        Artist createdArtist = artistService.createArtist("A001","System of a Down", "Rock", List.of("T001", "T002"));
+
+        // Verifica che l'ID sia generato e abbia un prefisso corretto
+        assertNotNull(createdArtist.getId());
+        assertTrue(createdArtist.getId().startsWith("SYSTEMOFADOWN_"));
     }
 
 }

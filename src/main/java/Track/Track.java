@@ -27,14 +27,15 @@ public class Track {
     private String title;
     private List<String> artistIds;
 
-    public Track(String id, int year, String genre, String album, String title) {
+    public Track(String id, int year, String genre, String album, String title, List<String> artistIds) {
         this.id = id;
        // this.artistId = artistId;
         this.year = year;
         this.genre = genre;
         this.album = album;
         this.title = title;
-        this.artistIds = new ArrayList<>();
+        this.artistIds = new ArrayList<>(artistIds);
+        //this.artistIds = artistIds;
     }
 
 
@@ -45,9 +46,12 @@ public class Track {
    }
 
 
-    public void  addArtistID(String artistId) {
-        if (!this.artistIds.contains(artistId)) {
-            this.artistIds.add(artistId);
+    public void addArtistID(String artistId) {
+        if (artistIds == null) {
+            artistIds = new ArrayList<>();
+        }
+        if (!artistIds.contains(artistId)) {
+            artistIds.add(artistId);
         }
     }
 
@@ -81,7 +85,8 @@ public class Track {
     }
 
     public void setArtistIds(List<String> artistIds) {
-        this.artistIds = artistIds;
+        //this.artistIds = artistIds;
+        this.artistIds = new ArrayList<>(artistIds);
     }
 
     //Starting Setter Method

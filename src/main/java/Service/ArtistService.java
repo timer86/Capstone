@@ -4,12 +4,15 @@ import DAO.TrackDAO;
 import DAO.ArtistDAO;
 import Track.Track;
 import Artist.Artist;
+
 import Track.MusicGenres;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ArtistService {
     private TrackDAO trackDao;
@@ -23,7 +26,7 @@ public class ArtistService {
     public Artist createArtist(String id, String name, String genre, List<String> trackIds) {
         // Validazioni dei campi
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("Artist ID cannot be null or empty");
+            id = generateArtistId(name);
         }
 
         if (name == null || name.trim().isEmpty()) {
@@ -38,7 +41,11 @@ public class ArtistService {
             throw new IllegalArgumentException("The Genre " + genre + " is not allowed. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
         }
 
-        List<String> uniqueTrackIds = trackIds.stream().distinct().collect(Collectors.toList());
+        if (trackIds == null || trackIds.isEmpty()) {
+            throw new IllegalArgumentException("Track IDs cannot be null or empty");
+        }
+
+        Set<String> uniqueTrackIds = new HashSet<>(trackIds);
 
         // Verifica che tutte le tracce esistano
         for (String trackId : uniqueTrackIds) {
@@ -49,8 +56,8 @@ public class ArtistService {
         }
 
         // Crea il nuovo artista
-        Artist newArtist = new Artist(id, name, genre);
-        newArtist.setTrackIds(uniqueTrackIds);
+        Artist newArtist = new Artist(id, name, genre,trackIds);
+        newArtist.setTrackIds(List.copyOf(uniqueTrackIds));
 
         // Salva l'artista nel DAO
         Artist savedArtist = artistDao.createArtist(newArtist);
@@ -58,15 +65,19 @@ public class ArtistService {
         // Aggiorna le tracce per aggiungere l'artista appena creato
         for (String trackId : uniqueTrackIds) {
             Track track = trackDao.getTrackById(trackId);
-            if (!track.getArtistIds().contains(id)) {
-                track.addArtistID(id);
-                trackDao.updateTrack(track); // Salva il track aggiornato
+            if (track != null && !track.getArtistIds().contains(id)) {
+                track.addArtistID(id); // Aggiunge l'ID dell'artista alla traccia
+                trackDao.updateTrack(track); // Salva la traccia aggiornata
             }
         }
 
         return savedArtist;
     }
 
+    private String generateArtistId(String name) {
+        // Genera un ID unico basato sul nome e sul timestamp
+        return name.replaceAll("\\s+", "").toUpperCase() + "_" + System.currentTimeMillis();
+    }
 
     public Artist updateArtist(Artist artist) {
         // Controlla che l'artista esista
@@ -102,5 +113,7 @@ public class ArtistService {
         // Elimina l'artista dal DAO
         return artistDao.deleteArtist(id);
     }
+
+
 }
 

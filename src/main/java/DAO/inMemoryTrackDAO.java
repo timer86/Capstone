@@ -2,13 +2,12 @@ package DAO;
 
 import Track.Track;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class inMemoryTrackDAO implements TrackDAO{
 //arto
+    private final List<Track> tracks = new ArrayList<>();
     private final Map<String, Track> trackMap = new HashMap<>();
 
     @Override
@@ -43,4 +42,48 @@ public class inMemoryTrackDAO implements TrackDAO{
         Track removed = trackMap.remove(id);
         return removed != null;
     }
+
+    @Override
+    public List<Track> getTracksbyArtistID(String artistID){
+        return tracks.stream()
+                .filter(track -> track.getArtistIds().contains(artistID))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+
+    public List<Track> getTrackByTitle(String title){
+        return tracks.stream()
+                .filter(track -> Objects.equals(track.getTitle(), title))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Track> getTrackByID(String id){
+        return tracks.stream()
+                .filter(track-> Objects.equals(track.getId(), id))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Track>  getTracksByYear(int year){
+        return tracks.stream()
+                .filter(track -> Objects.equals(track.getYear(),year))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Track> getTracksbyAlbum(String Album){
+        return tracks.stream()
+                .filter(track -> Objects.equals(track.getAlbum(), Album))
+                .collect(Collectors.toList());
+    }
+
+    public List<Track> getTracksByGenre(String genre){
+        return tracks.stream()
+                .filter(track -> Objects.equals(track.getGenre(), genre))
+                .collect(Collectors.toList());
+    }
+
 }
