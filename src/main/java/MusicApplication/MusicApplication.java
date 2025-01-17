@@ -104,7 +104,7 @@ public class MusicApplication {
         for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
-        System.out.println("  Welcome to the Music Application - UPDATE TRACK Section  ");
+        System.out.println("  Welcome to the Music Application - UPDATE TRACK Section ");
         for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
@@ -121,6 +121,10 @@ public class MusicApplication {
                     System.out.println("INPUT ERROR - Please enter a valid Title");
                 }
             }
+
+            Track track = new Track("","","","","");
+            String trackid = track.getIdByTitle(title);
+
 
             /*ALBUM - IF EMPTY IS A SINGLE TRACK*/
             album = input_TR.next("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - let empty");
@@ -189,14 +193,31 @@ public class MusicApplication {
             }
 
 
-
+            Artist artist = new Artist("","","");
             /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
             for (int i = 0; i < artistlist.size(); i++) {
                 single_artist = artistlist.get(i);
-                String id = Artist.getIdByName(single_artist);
-
+                String id = artist.getIdByName(single_artist);
+                if (id.isEmpty()) {
+                    System.out.println("WARNING the Artist " + single_artist + " is not in the database");
+                    loop = true;
+                    while (loop) {
+                        String ans = input_TR.next("Do you want to add this artist now?").toUpperCase().trim();
+                        switch (ans) {
+                            case "Y","YES":
+                                creare funzione crea artista;
+                                break;
+                            case "N","NO":
+                                artistlist.remove(i);
+                                loop = false;
+                            default:
+                                System.out.println("INPUT ERROR - Please enter only YES/NO");
+                        }
+                    }
+                }
 
             }
+
 
         }
 

@@ -72,9 +72,8 @@ public class Track {
         return title;
     }
 
-    public String getIdbyTitle(String title) {
-        return id;
-    }
+
+    public String getIdByTitle(String title){return id;}
 
     public List<String> getArtistIds() {
         return artistIds;
