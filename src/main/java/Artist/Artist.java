@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Added Francesco Cao 17/01/2025 15:43
+
+ */
+/**
  * This Class represent a Sing Artist with reference to Track and other data AG update 15/01/2025 15:19
  */
 
