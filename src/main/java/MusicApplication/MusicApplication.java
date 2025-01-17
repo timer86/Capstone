@@ -135,9 +135,11 @@ public class MusicApplication {
                     System.out.println("Year: " + track.getYear(track_id));
                     System.out.println("Album: " + track.getAlbum(track_id));
                     System.out.print("Artist list: ");
-                    for (int i = 0; i < track.getArtistIds(track_id).size(); i++) {
+                    List<String> artistidlist = new ArrayList<String>();
+                    artistidlist = track.getArtistIds(track_id);
+                    for (int i = 0; i < artistidlist.size(); i++) {
                         Artist artist = new Artist("","","");
-                        System.out.println(artist.getNameById(track.getArtistIds(i)+", ");
+                        System.out.println(artist.getNameById(artistidlist(i))+", ");
                     }
                     ans_TR = input_TR.next("Do you want to update or create a new track?\n 1 - Update\n 2 - Create");
                     switch(ans_TR){
