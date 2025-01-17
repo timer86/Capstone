@@ -41,6 +41,21 @@ public class TrackServiceTest {
 
 
     @Test
+    public void testGetGenreByTrackId_Success() {
+        // Mock del track DAO
+        Track mockTrack = new Track("T001", 2023, "Rock", "Rock Album", "Best Song", List.of("A001"));
+        when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
+
+        // Metodo da testare
+        String genre = trackService.getGenreByTrackId("T001");
+
+        // Verifica
+        assertEquals("Rock", genre);
+        verify(trackDAO).getTrackById("T001");
+    }
+
+
+    @Test
     public void testCreateTrack_Success() {
         // Dati di esempio
         int year = 2022;

@@ -92,6 +92,14 @@ public class TrackService {
                 .orElseThrow(() -> new IllegalArgumentException("Track with title " + title + " does not exist"));
     }
 
+    public String getGenreByTrackId(String trackId) {
+        Track track = trackDao.getTrackById(trackId);
+        if (track == null) {
+            throw new IllegalArgumentException("Track with ID " + trackId + " does not exist");
+        }
+        return track.getGenre();
+    }
+
     public List<Track> getTracksByArtistID(String artistId) {
         if (artistId == null || artistId.trim().isEmpty()) {
             throw new IllegalArgumentException("Artist ID cannot be null or empty");
