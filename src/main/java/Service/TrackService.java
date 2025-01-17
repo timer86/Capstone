@@ -13,8 +13,6 @@ import Track.MusicGenres;
 
 import java.util.*;
 
-import java.util.stream.Collectors;
-
 
 public class TrackService {
     private final List<Track> tracks = new ArrayList<>();
@@ -99,6 +97,53 @@ public class TrackService {
         }
         return track.getGenre();
     }
+
+    public int getYearByTrackId(String trackId) {
+        Track track = trackDao.getTrackById(trackId);
+        if (track == null) {
+            throw new IllegalArgumentException("Track with ID " + trackId + " does not exist");
+        }
+        return track.getYear();
+    }
+
+    public String getAlbumTrackId(String trackId) {
+        Track track = trackDao.getTrackById(trackId);
+        if (track == null) {
+            throw new IllegalArgumentException("Track with ID " + trackId + " does not exist");
+        }
+        return track.getAlbum();
+    }
+
+    public List<Artist> getArtistsByTrackId(String trackId) {
+        // Recupera la traccia dall'ID
+        Track track = trackDao.getTrackById(trackId);
+        if (track == null) {
+            throw new IllegalArgumentException("Track with ID " + trackId + " does not exist");
+        }
+
+        // Ottieni gli ID degli artisti dalla traccia
+        List<String> artistIds = track.getArtistIds();
+
+        // Recupera gli artisti utilizzando i loro ID
+        List<Artist> artists = new ArrayList<>();
+        for (String artistId : artistIds) {
+            Artist artist = artistDao.getArtistById(artistId);
+            if (artist != null) {
+                artists.add(artist);
+            } else {
+                throw new IllegalArgumentException("Artist with ID " + artistId + " does not exist");
+            }
+        }
+
+        return artists;
+    }
+
+
+
+
+
+
+
 
     public List<Track> getTracksByArtistID(String artistId) {
         if (artistId == null || artistId.trim().isEmpty()) {

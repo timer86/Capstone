@@ -439,4 +439,98 @@ public class TrackServiceTest {
         assertEquals("Rock", track.getGenre());
     }
 
+    @Test
+    public void testGetArtistsByTrackId_Success() {
+        // Mock della traccia esistente
+        Track mockTrack = new Track("T001", 2023, "Rock", "Rock Album", "Best Song", List.of("A001", "A002"));
+        when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
+
+        // Mock degli artisti esistenti
+        Artist artist1 = new Artist("A001", "Artist 1", "Rock", new ArrayList<>());
+        Artist artist2 = new Artist("A002", "Artist 2", "Pop", new ArrayList<>());
+        when(artistDao.getArtistById("A001")).thenReturn(artist1);
+        when(artistDao.getArtistById("A002")).thenReturn(artist2);
+
+        // Metodo da testare
+        List<Artist> artists = trackService.getArtistsByTrackId("T001");
+
+        // Verifiche
+        assertNotNull(artists, "The list of artists should not be null");
+        assertEquals(2, artists.size(), "The track should have 2 associated artists");
+        assertTrue(artists.contains(artist1), "The list should contain Artist 1");
+        assertTrue(artists.contains(artist2), "The list should contain Artist 2");
+
+        // Verifica dei mock
+        verify(trackDAO).getTrackById("T001");
+        verify(artistDao).getArtistById("A001");
+        verify(artistDao).getArtistById("A002");
+    }
+
+    @Test
+    public void testGetArtistsByTrackId_TrackNotFound_ThrowsException() {
+        // Configura il mock per restituire null per una traccia inesistente
+        when(trackDAO.getTrackById("INVALID_ID")).thenReturn(null);
+
+        // Metodo da testare e verifica che l'eccezione venga lanciata
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getArtistsByTrackId("INVALID_ID")
+        );
+
+        // Verifica del messaggio dell'eccezione
+        assertEquals("Track with ID INVALID_ID does not exist", exception.getMessage());
+
+        // Verifica che il mock sia stato chiamato
+        verify(trackDAO).getTrackById("INVALID_ID");
+    }
+
+    @Test
+    public void testGetArtistsByTrackId_ArtistNotFound_ThrowsException() {
+        // Mock della traccia esistente
+        Track mockTrack = new Track("T001", 2023, "Rock", "Rock Album", "Best Song", List.of("A001", "INVALID_ARTIST_ID"));
+        when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
+
+        // Mock dell'artista esistente
+        when(artistDao.getArtistById("A001")).thenReturn(new Artist("A001", "Artist 1", "Rock", new ArrayList<>()));
+
+        // Configura il mock per restituire null per l'artista inesistente
+        when(artistDao.getArtistById("INVALID_ARTIST_ID")).thenReturn(null);
+
+        // Metodo da testare e verifica che l'eccezione venga lanciata
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getArtistsByTrackId("T001")
+        );
+
+        // Verifica del messaggio dell'eccezione
+        assertEquals("Artist with ID INVALID_ARTIST_ID does not exist", exception.getMessage());
+
+        // Verifica che il mock sia stato chiamato
+        verify(trackDAO).getTrackById("T001");
+        verify(artistDao).getArtistById("A001");
+        verify(artistDao).getArtistById("INVALID_ARTIST_ID");
+    }
+
+    @Test
+    public void testGetAlbumByTrackId_Success() {
+        // Mock del track DAO
+        Track mockTrack = new Track("T001", 2023, "Rock", "Rock Album", "Best Song", List.of("A001"));
+        when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
+
+        // Metodo da testare
+        String album = trackService.getAlbumTrackId("T001");
+
+        // Verifica
+        assertEquals("Rock Album", album);
+        verify(trackDAO).getTrackById("T001");
+    }
+
+    @Test
+    public void testGetYearByTrack_id(){
+        Track mockTrack = new Track("T001",2023, "Rock","Rock Album","Best Song", List.of("A001"));
+        when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
+        int year = trackService.getYearByTrackId("T001");
+        assertEquals(2023, year);
+        verify(trackDAO).getTrackById("T001");
+
+    }
+
 }
