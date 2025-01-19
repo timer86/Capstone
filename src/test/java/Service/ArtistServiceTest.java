@@ -193,6 +193,23 @@ public class ArtistServiceTest {
         assertEquals("Pop", updateArtist.getGenre());
         verify(artistDAO).updateArtist(any(Artist.class));
     }
+    @Test
+    public void testGetArtistById_Success() {
+        // Dati di esempio
+        String artistId = "A001";
+        Artist mockArtist = new Artist(artistId, "Bon Jovi", "Rock", new ArrayList<>());
+        when(artistDAO.getArtistById(artistId)).thenReturn(mockArtist);
+
+        // Test del metodo
+        Artist retrievedArtist = artistDAO.getArtistById(artistId);
+
+        // Verifiche
+        assertNotNull(retrievedArtist, "The retrieved artist should not be null");
+        assertEquals(artistId, retrievedArtist.getId());
+        assertEquals("Bon Jovi", retrievedArtist.getName());
+        assertEquals("Rock", retrievedArtist.getGenre());
+    }
+
 
 
 
@@ -213,5 +230,68 @@ public class ArtistServiceTest {
         assertNotNull(createdArtist.getId());
         assertTrue(createdArtist.getId().startsWith("A001"));
     }
+
+    @Test
+    public void testCreateArtist_DuplicateId_ThrowsException() {
+        String artistId = "A001";
+        when(artistDAO.getArtistById(artistId)).thenReturn(new Artist(artistId, "Existing Artist", "Rock", new ArrayList<>()));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.createArtist(artistId, "New Artist", "Rock", List.of("T001"))
+        );
+
+        assertEquals("Artist with ID A001 already exists", exception.getMessage());
+        verify(artistDAO).getArtistById(artistId);
+    }
+
+
+    @Test
+    public void testCreateArtist_TrackIdDoesNotExist_ThrowsException() {
+        String trackId = "T999";
+        when(trackDao.getTrackById(trackId)).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.createArtist("A001", "Artist Name", "Rock", List.of(trackId))
+        );
+
+        assertEquals("The Track with ID: " + trackId + " does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testGetAllArtists_Success() {
+        List<Artist> mockArtists = List.of(
+                new Artist("A001", "Artist 1", "Rock", new ArrayList<>()),
+                new Artist("A002", "Artist 2", "Pop", new ArrayList<>())
+        );
+        when(artistDAO.getAllArtists()).thenReturn(mockArtists);
+
+        List<Artist> result = artistService.getAllArtists();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("A001", result.get(0).getId());
+        verify(artistDAO).getAllArtists();
+    }
+
+    @Test
+    public void testDeleteArtist_ArtistDoesNotExist() {
+        String artistId = "A001";
+        when(artistDAO.getArtistById(artistId)).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.deleteArtist(artistId)
+        );
+
+        assertEquals("Artist with ID " + artistId + " does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testCreateArtist_EmptyTrackIds_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.createArtist("A001", "System of a Down", "Rock", List.of())
+        );
+        assertEquals("Track IDs cannot be null or empty", exception.getMessage());
+    }
+
 
 }

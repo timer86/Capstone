@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +28,7 @@ public class TrackServiceTest {
     private TrackDAO trackDAO;
     private ArtistDAO artistDao;
     private TrackService trackService;
+
 
     @BeforeEach
 
@@ -51,6 +53,15 @@ public class TrackServiceTest {
 
         // Verifica
         assertEquals("Rock", genre);
+        verify(trackDAO).getTrackById("T001");
+    }
+
+    @Test
+    public void testGetGenreByTrackId_Fail() {
+        Track mockTrack = new Track("T001",2023, "Rock","Rock Album", "Best Song", List.of("A001"));
+        when(trackDAO.getTrackById("T001")).thenReturn(null);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getGenreByTrackId("T001"));
+        assertEquals("Track with ID T001 does not exist", exception.getMessage());
         verify(trackDAO).getTrackById("T001");
     }
 
@@ -90,26 +101,41 @@ public class TrackServiceTest {
     }
 
 
+
+
+
+
     @Test
-    public void testCreateTrack_FailsifArtist() {
-        String trackId = "T002";
-        int year = 2021;
-        String genre = "Pop";
-        String album = "Maverick";
-        String title = "Hold My Hands";
-        List<String> artistIds = List.of("A999");
+    public void testCreateTrack_CreatesMissingArtists() {
+        String simulatedUserInput = "New Artist\nRock\n";
+        System.setIn(new ByteArrayInputStream(simulatedUserInput.getBytes()));
 
-        //Mock: Artist don't exist
-        when(artistDao.getArtistById("A999")).thenReturn(null);
+        String trackId = "T001";
+        int year = 2023;
+        String genre = "Rock";
+        String album = "Rock Album";
+        String title = "Best Song Ever";
+        List<String> artistIds = List.of("A001", "A002");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                trackService.createTrack(trackId, year, genre, album, title, artistIds)
-        );
+        when(artistDao.getArtistById("A001")).thenReturn(new Artist("A001", "Existing Artist", "Rock", new ArrayList<>()));
+        when(artistDao.getArtistById("A002")).thenReturn(null);
+        when(trackDAO.createTrack(any(Track.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(artistDao.createArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        //Verify the message
-        assertEquals("The Artist with this ID: A999 does not exist", exception.getMessage());
-        verifyNoInteractions(trackDAO);
+        Track createdTrack = trackService.createTrack(trackId, year, genre, album, title, artistIds);
+
+        assertNotNull(createdTrack);
+        assertTrue(createdTrack.getArtistIds().containsAll(artistIds));
+
+        verify(artistDao).createArtist(argThat(artist -> artist.getName().equals("New Artist") && artist.getGenre().equals("Rock")));
+        verify(trackDAO).createTrack(any(Track.class));
     }
+
+
+
+
+
+
 
 
 
@@ -219,6 +245,16 @@ public class TrackServiceTest {
     }
 
     @Test
+
+    public void testUpdateTrack_Fails() {
+        Track track = new Track("T001", 2022, "Rock", "Rock Album", "Rock Song", List.of("A001"));
+        when(trackDAO.updateTrack(track)).thenThrow(new IllegalArgumentException("Track with ID T001 does not exist"));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.updateTrack(track));
+        assertEquals("Track with ID T001 does not exist", exception.getMessage());
+        verify(trackDAO).updateTrack(track);
+    }
+
+    @Test
     public void testGetAllTracks_EmptyList() {
         when(trackDAO.getAllTracks()).thenReturn(List.of());
 
@@ -229,6 +265,8 @@ public class TrackServiceTest {
         assertNotNull(allTracks);
         assertTrue(allTracks.isEmpty());
     }
+
+
 
     @Test
     public void testGetAllTracks_WithTracks() {
@@ -279,22 +317,7 @@ public class TrackServiceTest {
         assertEquals(artistIds, capturedTrack.getArtistIds());
     }
 
-    @Test
-    public void testGetArtistById_Success() {
-        // Dati di esempio
-        String artistId = "A001";
-        Artist mockArtist = new Artist(artistId, "Bon Jovi", "Rock", new ArrayList<>());
-        when(artistDao.getArtistById(artistId)).thenReturn(mockArtist);
 
-        // Test del metodo
-        Artist retrievedArtist = artistDao.getArtistById(artistId);
-
-        // Verifiche
-        assertNotNull(retrievedArtist, "The retrieved artist should not be null");
-        assertEquals(artistId, retrievedArtist.getId());
-        assertEquals("Bon Jovi", retrievedArtist.getName());
-        assertEquals("Rock", retrievedArtist.getGenre());
-    }
 
     @Test
     public void testGetTrackById_Success() {
@@ -310,6 +333,27 @@ public class TrackServiceTest {
         assertEquals("Rock Song", retrievedTrack.getTitle());
     }
 
+
+    @Test
+    public void testGetTrackById_Fails() {
+        // Configura il mock per restituire una lista vuota
+        String trackId = "T001";
+        when(trackDAO.getTrackByID(trackId)).thenReturn(List.of());
+
+        // Metodo da testare
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getTrackById(trackId)
+        );
+
+        // Verifica del messaggio
+        assertEquals("No tracks found with ID: " + trackId, exception.getMessage());
+
+        // Verifica che il mock sia stato chiamato
+        verify(trackDAO).getTrackByID(trackId);
+    }
+
+
+
     @Test
     public void testGetTracksByArtistId_Success() {
         when(trackDAO.getAllTracks()).thenReturn(List.of(
@@ -324,6 +368,11 @@ public class TrackServiceTest {
         assertTrue(tracks.stream().allMatch(track -> track.getArtistIds().contains("A001")));
     }
 
+    @Test
+    public void testgetIDYear_yearEmpty(){
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->trackService.getYearByTrackId(null));
+        assertEquals("Track with ID null does not exist",exception.getMessage());
+    }
     @Test
     public void testCreateTrack_YearBefore1900_ThrowsException() {
         String trackId = "T003";
@@ -381,8 +430,6 @@ public class TrackServiceTest {
     }
 
 
-
-
     @Test
     public void testArtistTrackRelation_Success() {
         // Mock delle tracce e degli artisti
@@ -438,6 +485,26 @@ public class TrackServiceTest {
         assertEquals("Chop Suey", track.getTitle());
         assertEquals("Rock", track.getGenre());
     }
+
+    @Test
+    public void testGetTrackByTitle_NullorEmptyTitle_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getTrackByTitle(null));
+        assertEquals("Title cannot be null or empty", exception.getMessage());
+        Exception exception1 = assertThrows(IllegalArgumentException.class, () -> trackService.getTrackByTitle(" "));
+        assertEquals("Title cannot be null or empty", exception1.getMessage());
+    }
+
+
+    @Test
+    public void testGetTrackByTitle_notFound(){
+        when(trackDAO.getAllTracks()).thenReturn(List.of(new Track("T001",2023,"Rock","Rock Album", "Antother Song", List.of("A001"))));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getTrackByTitle("Best Song"));
+        assertEquals("Track with title Best Song does not exist", exception.getMessage());
+        verify(trackDAO, times(1)).getAllTracks();
+
+    }
+
+
 
     @Test
     public void testGetArtistsByTrackId_Success() {
@@ -524,6 +591,15 @@ public class TrackServiceTest {
     }
 
     @Test
+    public void testGetAlbumByTrackId_fail(){
+    String trackId = "T001";
+    when(trackDAO.getTrackById(trackId)).thenReturn(null);
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getAlbumTrackId(trackId));
+    assertEquals("Track with ID T001 does not exist", exception.getMessage());
+    verify(trackDAO).getTrackById(trackId);
+    }
+
+    @Test
     public void testGetYearByTrack_id(){
         Track mockTrack = new Track("T001",2023, "Rock","Rock Album","Best Song", List.of("A001"));
         when(trackDAO.getTrackById("T001")).thenReturn(mockTrack);
@@ -531,6 +607,120 @@ public class TrackServiceTest {
         assertEquals(2023, year);
         verify(trackDAO).getTrackById("T001");
 
+    }
+
+    @Test
+    public void testGetYearByTrackId_Fails() {
+        // Configura il mock per restituire null (traccia non trovata)
+        String trackId = "T001";
+        when(trackDAO.getTrackById(trackId)).thenReturn(null);
+
+        // Metodo da testare
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getYearByTrackId(trackId)
+        );
+
+        // Verifica il messaggio dell'eccezione
+        assertEquals("Track with ID " + trackId + " does not exist", exception.getMessage());
+
+        // Verifica che il mock sia stato chiamato
+        verify(trackDAO).getTrackById(trackId);
+    }
+
+
+    @Test
+    public void testCreateTrack_DuplicateId_ThrowsException() {
+        String trackId = "T001";
+        when(trackDAO.getTrackById(trackId)).thenReturn(new Track(trackId, 2023, "Rock", "Album 1", "Song 1", List.of("A001")));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(trackId, 2023, "Rock", "Album 1", "Song 1", List.of("A001"))
+        );
+
+        assertEquals("Track with ID T001 already exists", exception.getMessage());
+        verify(trackDAO).getTrackById(trackId);
+    }
+
+    @Test
+    public void testCreateTrack_NullOrEmptyTitle_ThrowsException() {
+        Exception exception1 = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 2023, "Rock", "Rock Album", null, List.of("A001"))
+        );
+        assertEquals("The Title cannot be empty", exception1.getMessage());
+
+        Exception exception2 = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 2023, "Rock", "Rock Album", "   ", List.of("A001"))
+        );
+        assertEquals("The Title cannot be empty", exception2.getMessage());
+    }
+
+    @Test
+    public void testCreateTrack_NullOrEmptyGenre_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 2023, null, "Rock Album", "Best Song", List.of("A001"))
+        );
+        assertEquals("The Genre cannot be empty", exception.getMessage());
+    }
+
+
+    @Test
+    public void testCreateTrack_NoArtists_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 2023, "Rock", "Rock Album", "Best Song", List.of())
+        );
+        assertEquals("Artist IDs cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    public void testGetTrackByTitle_NotFound_ThrowsException() {
+        when(trackDAO.getAllTracks()).thenReturn(List.of());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getTrackByTitle("Non Existent")
+        );
+        assertEquals("Track with title Non Existent does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateTrack_Fails_ThrowsException() {
+        Track track = new Track("T001", 2022, "Rock", "Rock Album", "Rock Song", List.of("A001"));
+        when(trackDAO.updateTrack(track)).thenThrow(new IllegalArgumentException("Track with ID T001 does not exist"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.updateTrack(track)
+        );
+        assertEquals("Track with ID T001 does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testCreateTrack_InvalidYearTooEarly_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 1800, "Rock", "Rock Album", "Best Song", List.of("A001"))
+        );
+        assertEquals("The Year cannot be less than 1900", exception.getMessage());
+    }
+
+    @Test
+    public void testCreateTrack_InvalidYearInFuture_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(null, 3000, "Rock", "Rock Album", "Best Song", List.of("A001"))
+        );
+        assertEquals("The Year cannot be in the Future", exception.getMessage());
+    }
+    @Test
+    public void testCreateTrack_NullGenre_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack("T005", 2023, null, "Rock Album", "Best Song", List.of("A001"))
+        );
+        assertEquals("The Genre cannot be empty", exception.getMessage());
+    }
+
+    @Test
+    public void testCreateTrack_EmptyGenre_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack("T005", 2023, " ", "Rock Album", "Best Song", List.of("A001"))
+        );
+        assertEquals("The Genre cannot be empty", exception.getMessage());
     }
 
 }

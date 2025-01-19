@@ -24,15 +24,22 @@ public class TrackService {
         this.artistDao = artistDao;
     }
 
-    public Track createTrack(String id, int year, String genre, String album, String title, List<String> artistIds ) {
+    public Track createTrack(String id, int year, String genre, String album, String title, List<String> artistIds) {
         int currentYear = java.time.LocalDate.now().getYear();
-
+        if (title == null || title.trim().isEmpty()){
+            throw new IllegalArgumentException("The Title cannot be empty");
+        }
         if (id  == null || id.trim().isEmpty()) {
             id = generateTrackId(title);
             System.out.println(id);
         }
         if (artistIds == null || artistIds.isEmpty()) {
             throw new IllegalArgumentException("Artist IDs cannot be null or empty");
+        }
+
+
+        if (trackDao.getTrackById(id) != null) {
+            throw new IllegalArgumentException("Track with ID " + id + " already exists");
         }
 
         if (year < 1900){
@@ -50,16 +57,19 @@ public class TrackService {
             throw new IllegalArgumentException("The Genre" + genre + "Not Present, use an other one");
         }
 
-        if (title == null || title.trim().isEmpty()){
-            throw new IllegalArgumentException("The Title cannot be empty");
-        }
+
 
         List<String> uniqueArtistIds = artistIds.stream().distinct().toList();
         Map<String, Artist> artistMap = new HashMap<>();
-        for (String artistId : uniqueArtistIds){
+
+        for (String artistId : uniqueArtistIds) {
             Artist artist = artistDao.getArtistById(artistId);
-            if (artist == null){
-                throw new IllegalArgumentException("The Artist with this ID: " + artistId + " does not exist");
+
+            if (artist == null) {
+                // Se l'artista non esiste, chiedi all'utente di crearlo
+                artist = promptUserToCreateArtist(artistId);
+                artistDao.createArtist(artist);
+                System.out.println("Artist with ID " + artistId + " did not exist and was created automatically.");
             }
             artistMap.put(artistId, artist);
         }
@@ -68,10 +78,9 @@ public class TrackService {
 
         Track savedTrack = trackDao.createTrack(newTrack);
 
-        for (Artist artist : artistMap.values()){
-            if (!artist.getTrackIds().contains(id)){
+        for (Artist artist : artistMap.values()) {
+            if (!artist.getTrackIds().contains(id)) {
                 artist.addIdTrack(id);
-                System.out.println("Updating artist: " + artist.getId());
                 artistDao.updateArtist(artist);
             }
         }
@@ -114,6 +123,29 @@ public class TrackService {
         return track.getAlbum();
     }
 
+    private Artist promptUserToCreateArtist(String artistId) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Artist with ID " + artistId + " does not exist.");
+        System.out.print("Enter the name for the new artist: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter the genre for the new artist: ");
+        String genre = scanner.nextLine();
+
+        if (!MusicGenres.ALLOWED_GENRES.contains(genre)) {
+            throw new IllegalArgumentException("The Genre " + genre + " is not allowed. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
+        }
+
+        // Crea automaticamente l'ID se non specificato
+        if (artistId == null || artistId.trim().isEmpty()) {
+            artistId = generateArtistId(name);
+        }
+
+        // Crea l'artista
+        return new Artist(artistId, name, genre, new ArrayList<>());
+    }
+
     public List<Artist> getArtistsByTrackId(String trackId) {
         // Recupera la traccia dall'ID
         Track track = trackDao.getTrackById(trackId);
@@ -148,6 +180,23 @@ public class TrackService {
                 .filter(track -> track.getArtistIds().contains(artistId))
                 .toList();
     }
+
+    public List<Track> getTrackById(String id) {
+        // Recupera le tracce dal DAO
+        List<Track> tracks = trackDao.getTrackByID(id);
+        if (tracks == null || tracks.isEmpty()) {
+            throw new IllegalArgumentException("No tracks found with ID: " + id);
+        }
+        return tracks;
+    }
+
+    private String generateArtistId(String name) {
+        // Genera un ID unico basato sul nome e sul timestamp
+        return name.replaceAll("\\s+", "").toUpperCase() + "_" + System.currentTimeMillis();
+    }
+
+
+
 
     private String generateTrackId(String name) {
         // Genera un ID unico basato sul nome e sul timestamp

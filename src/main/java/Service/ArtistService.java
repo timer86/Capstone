@@ -46,6 +46,10 @@ public class ArtistService {
             throw new IllegalArgumentException("The Genre " + genre + " is not allowed. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
         }
 
+        if (artistDao.getArtistById(id) != null) {
+            throw new IllegalArgumentException("Artist with ID " + id + " already exists");
+        }
+
         if (trackIds == null || trackIds.isEmpty()) {
             throw new IllegalArgumentException("Track IDs cannot be null or empty");
         }
@@ -118,6 +122,7 @@ public class ArtistService {
         // Elimina l'artista dal DAO
         return artistDao.deleteArtist(id);
     }
+
 
 
 }
