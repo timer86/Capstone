@@ -745,6 +745,42 @@ public class TrackServiceTest {
         assertEquals("The Track with this ID: null does not exist", exception.getMessage());
     }
 
+    @Test
+    public void testCreateTrack_CreatesArtistFromUserInput_Fail_InvalidGenre() {
+        String simulatedUserInput = "New Artist\nInvalidGenre\n";
+        System.setIn(new ByteArrayInputStream(simulatedUserInput.getBytes()));
+
+        String trackId = "T005";
+        int year = 2023;
+        String genre = "Rock";
+        String album = "New Album";
+        String title = "New Song";
+        List<String> artistIds = List.of("A003");
+
+        when(artistDao.getArtistById("A003")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                trackService.createTrack(trackId, year, genre, album, title, artistIds)
+        );
+
+        assertEquals("The Genre InvalidGenre is not allowed. Allowed genres: " + MusicGenres.ALLOWED_GENRES, exception.getMessage());
+
+        verify(artistDao, never()).createArtist(any(Artist.class));
+        verify(trackDAO, never()).createTrack(any(Track.class));
+    }
+
+    @Test
+    public void testGetTrackById_NullOrEmptyId_ThrowsException() {
+        Exception exception1 = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getTrackbyId(null)
+        );
+        assertEquals("The Track with this ID: null does not exist", exception1.getMessage());
+
+        Exception exception2 = assertThrows(IllegalArgumentException.class, () ->
+                trackService.getTrackbyId("")
+        );
+        assertEquals("The Track with this ID:  does not exist", exception2.getMessage());
+    }
 
 
 }
