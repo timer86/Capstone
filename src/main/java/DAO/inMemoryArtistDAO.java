@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import Track.MusicGenres;
+import Track.Track;
 
 public class inMemoryArtistDAO implements ArtistDAO{
     private final Map<String, Artist> artistMap = new HashMap<>();
+    private final List<Artist> artistList = new ArrayList<>();
+    private final List<Track> tracks = new ArrayList<>();
 
     @Override
     public Artist createArtist(Artist artist) {
@@ -42,8 +46,20 @@ public class inMemoryArtistDAO implements ArtistDAO{
         return artist;
     }
 
+    @Override
     public boolean deleteArtist(String id){
         Artist removed = artistMap.remove(id);
         return removed != null;
     }
+
+    @Override
+    public String getGenreById(String id) {
+        Artist artist = artistMap.get(id);
+        if (artist == null) {
+            throw new IllegalArgumentException("Artist with ID " + id + " does not exist");
+        }
+        return artist.getGenre();
+    }
+
+
 }

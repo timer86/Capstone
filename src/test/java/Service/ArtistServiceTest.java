@@ -294,4 +294,85 @@ public class ArtistServiceTest {
     }
 
 
+    @Test
+    public void testGetGenreByArtistId_Success() {
+        Artist mockArtist = new Artist("A001", "Queen", "Rock", List.of("T001", "T002"));
+        when(artistDAO.getArtistById("A001")).thenReturn(mockArtist);
+
+        String genre = artistService.getGenreById("A001");
+
+        assertEquals("Rock", genre, "The genre should be Rock");
+        verify(artistDAO).getArtistById("A001");
+    }
+
+    @Test
+    public void testGetGenreByArtistId_Fails() {
+        when(artistDAO.getArtistById("A999")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getGenreById("A999")
+        );
+
+        assertEquals("Artist with ID A999 does not exist", exception.getMessage());
+        verify(artistDAO).getArtistById("A999");
+    }
+
+
+    @Test
+    public void testGetTracksByArtistId_Success() {
+        // Mock dell'artista con tracce associate
+        when(artistDAO.getArtistById("A001"))
+                .thenReturn(new Artist("A001", "Bon Jovi", "Rock", List.of("T001", "T002")));
+
+        // Mock delle tracce
+        when(trackDao.getTrackById("T001"))
+                .thenReturn(new Track("T001", 2023, "Rock", "Album 1", "Song 1", List.of("A001")));
+        when(trackDao.getTrackById("T002"))
+                .thenReturn(new Track("T002", 2022, "Rock", "Album 2", "Song 2", List.of("A001")));
+
+        // Metodo da testare
+        List<Track> tracks = artistService.getTracksByArtistId("A001");
+
+        // Verifica
+        assertNotNull(tracks, "The list of tracks should not be null");
+        assertEquals(2, tracks.size(), "The number of tracks should be 2");
+        assertEquals("T001", tracks.get(0).getId(), "First track ID should be T001");
+        assertEquals("T002", tracks.get(1).getId(), "Second track ID should be T002");
+
+        // Verifica chiamate ai mock
+        verify(artistDAO).getArtistById("A001");
+        verify(trackDao).getTrackById("T001");
+        verify(trackDao).getTrackById("T002");
+    }
+
+
+
+    @Test
+    public void testGetTracksByArtistId_Fails_WhenArtistNotFound() {
+        when(artistDAO.getArtistById("A999")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getTracksByArtistId("A999")
+        );
+
+        assertEquals("Artist with ID A999 does not exist", exception.getMessage());
+        verify(artistDAO).getArtistById("A999");
+    }
+
+    @Test
+    public void testGetTracksByArtistId_Fails_WhenNoTracksFound() {
+        when(artistDAO.getArtistById("A001"))
+                .thenReturn(new Artist("A001", "Bon Jovi", "Rock", List.of()));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getTracksByArtistId("A001")
+        );
+
+        assertEquals("No tracks found for artist with ID A001", exception.getMessage());
+        verify(artistDAO).getArtistById("A001");
+    }
+
+
+
+
 }

@@ -31,7 +31,7 @@ public class Artist {
         this.id = id;
         this.name = name;
         this.genre = genre;
-        this.idTrack = new ArrayList<>();
+        this.idTrack = new ArrayList<>(idTrack);
     }
 
 

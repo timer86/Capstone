@@ -716,11 +716,35 @@ public class TrackServiceTest {
     }
 
     @Test
-    public void testCreateTrack_EmptyGenre_ThrowsException() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                trackService.createTrack("T005", 2023, " ", "Rock Album", "Best Song", List.of("A001"))
-        );
-        assertEquals("The Genre cannot be empty", exception.getMessage());
+    public void testCreateTrack_CreatesArtistFromUserInput() {
+        String simulatedUserInput = "New Artist\nRock\n";
+        System.setIn(new ByteArrayInputStream(simulatedUserInput.getBytes()));
+
+        String trackId = "T005";
+        int year = 2023;
+        String genre = "Rock";
+        String album = "New Album";
+        String title = "New Song";
+        List<String> artistIds = List.of("A003");
+
+        when(artistDao.getArtistById("A003")).thenReturn(null);
+        when(trackDAO.createTrack(any(Track.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(artistDao.createArtist(any(Artist.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Track createdTrack = trackService.createTrack(trackId, year, genre, album, title, artistIds);
+
+        assertNotNull(createdTrack, "The created track should not be null");
+        assertEquals("New Song", createdTrack.getTitle());
+
+        verify(artistDao).createArtist(argThat(artist -> artist.getName().equals("New Artist") && artist.getGenre().equals("Rock")));
     }
+
+    @Test
+    public void testGetTrackById_NullId_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getTrackbyId(null));
+        assertEquals("The Track with this ID: null does not exist", exception.getMessage());
+    }
+
+
 
 }

@@ -125,5 +125,41 @@ public class ArtistService {
 
 
 
+    public String getGenreById(String artistId) {
+        Artist artist = artistDao.getArtistById(artistId);
+        if (artist == null) {
+            throw new IllegalArgumentException("Artist with ID " + artistId + " does not exist");
+        }
+        return artist.getGenre();
+    }
+
+    public List<Track> getTracksByArtistId(String artistId) {
+        Artist artist = artistDao.getArtistById(artistId);
+        if (artist == null) {
+            throw new IllegalArgumentException("Artist with ID " + artistId + " does not exist");
+        }
+
+        List<String> trackIds = artist.getTrackIds();
+        List<Track> tracks = new ArrayList<>();
+
+        for (String trackId : trackIds) {
+            Track track = trackDao.getTrackById(trackId);
+            if (track != null) {
+                tracks.add(track);
+            }
+        }
+
+        if (tracks.isEmpty()) {
+            throw new IllegalArgumentException("No tracks found for artist with ID " + artistId);
+        }
+
+        return tracks;
+    }
+
+
+
+
+
+
 }
 
