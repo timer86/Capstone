@@ -36,20 +36,23 @@ public class MusicApplication {
             boolean loop = true;
             while(loop){
                 System.out.println("Please choose what you would like to do\n 1 - Update the Music Application\n 2 - Consult Music Application \n E) for Exit");
-                ans = input.next();
+                ans = input.next().trim();
                 switch(ans){
                     case "1":
                         loop = false;
                         main_loop = updateMusicMenu();
+                        break;
                     case "2":
                         loop = false;
                         main_loop = consultMusicMenu();
+                        break;
                     case "e","E":
                         loop = false;
                         main_loop = false;
+                        break;
                     default:
                         System.out.println("INPUT ERROR - Please enter a valid option");
-
+                        break;
                 }
             }
         }
@@ -59,7 +62,7 @@ public class MusicApplication {
     public static Boolean updateMusicMenu (){
         Scanner input_UM = new Scanner(System.in);
         String ans_UM = "";
-        Boolean choose = false;
+        boolean choose = false;
         for(int i=1 ; i<=10 ; i++){
             System.out.print("*");
         }
@@ -70,27 +73,31 @@ public class MusicApplication {
         System.out.println(" ");
         boolean update_MM_loop = true;
         while(update_MM_loop){
-            System.out.println("Please choose what you would like to update\\n 1) Update one Track\\n 2) Update an Artist\n 0) Previous Menu\n E) for Exit");
+            System.out.println("Please choose what you would like to update \n 1) Update one Track \n 2) Update an Artist \n 0) Previous Menu\n E) for Exit");
             ans_UM = input_UM.next();
             switch(ans_UM){
                 case "1":
                     update_MM_loop = updateTrack("");
                     choose = update_MM_loop;
+                    break;
                 case "2":
                     update_MM_loop = updateArtist("");
                     choose = update_MM_loop;
+                    break;
                 case "0":
                     update_MM_loop = false;
                     choose = true;
                     break;
-                case "e","E":
+                case "E","e":
                     update_MM_loop = false;
-                    return false;
+                    choose = false;
+                    break;
                 default:
-                    System.out.println("INPUT ERROR - Please enter a valid option");
                     update_MM_loop = true;
+                    break;
             }
-
+            System.out.println("choose done is " + ans_UM + "\n update_MM_loop is" + update_MM_loop);
+            System.out.println("choose variable is" + choose);
         }
         return choose;
     }
@@ -170,6 +177,7 @@ public class MusicApplication {
                     switch(ans_TR){
                         case "1":
                             loop = false;
+                            break;
                         case "2":
                             boolean loop2 = true;
                             while (loop2) {
@@ -182,8 +190,10 @@ public class MusicApplication {
                                 }
                             }
                             loop = false;
+                            break;
                         default:
                             System.out.println("INPUT ERROR - Please enter a valid option");
+                            break;
                     }
                 }
             }
@@ -277,12 +287,14 @@ public class MusicApplication {
                                     else {
                                         System.out.println("ERROR CREATING NEW ARTIST");
                                     }
-
+                                    break;
                                 case "N","NO":
                                     artistlist.remove(i);
                                     loop = false;
+                                    break;
                                 default:
                                     System.out.println("INPUT ERROR - Please enter only YES/NO");
+                                    break;
                             }
                         }
                     }
@@ -339,7 +351,7 @@ public class MusicApplication {
                                 }
                             }
                             loop = false;
-
+                            break;
                         case "2":
                             /*GENRE - ALLOWED ONLY GENRE IN MUSICGENRES LIST*/
                             loop2 = true;
@@ -356,7 +368,7 @@ public class MusicApplication {
                                 }
                             }
                             loop = false;
-
+                            break;
                         case "3":
                             /*YEAR - ALLOWED ONLY 1900 - today*/
                             loop2 = true;
@@ -377,7 +389,7 @@ public class MusicApplication {
                                 }
                             }
                             loop = false;
-
+                            break;
                         case "4":
                             /*ALBUM - IF EMPTY IS A SINGLE TRACK*/
                             loop2 = true;
@@ -394,7 +406,7 @@ public class MusicApplication {
                                 }
                             }
                             loop = false;
-
+                            break;
                         case "5":
                             /*ARTIST LIST - EMPTY to finish*/
                             loop2 = true;
@@ -410,6 +422,7 @@ public class MusicApplication {
                             }
 
                             loop2 = true;
+
                             while (loop2) {
                                 System.out.println("please provide additional ARTIST of the Track " + title);
                                 for (int i = 0; i < artistlist.size(); i++) {
@@ -449,8 +462,10 @@ public class MusicApplication {
 
                             }
                             loop = false;
+                            break;
                         default:
                             System.out.println("INPUT ERROR - Please enter a valid option");
+                            break;
                     }
 
                 }
@@ -465,16 +480,20 @@ public class MusicApplication {
                     switch (ans_TR){
                         case "1":
                             loop = false;
+                            break;
                         case "E":
                             loop = false;
                             update_TR_loop = false;
                             choose = false;
+                            break;
                         case "0":
                             loop = false;
                             update_TR_loop = false;
                             choose = true;
+                            break;
                         default:
                             System.out.println("INPUT ERROR - Please enter a valid option");
+                            break;
                     }
                 }
             }
@@ -615,12 +634,14 @@ public class MusicApplication {
                                 else {
                                     System.out.println("ERROR CREATING NEW TRACK");
                                 }
-
+                                break;
                             case "N","NO":
                                 tracklist.remove(i);
                                 loop = false;
+                                break;
                             default:
                                 System.out.println("INPUT ERROR - Please enter only YES/NO");
+                                break;
                         }
                     }
                 }
@@ -637,16 +658,20 @@ public class MusicApplication {
                     switch (ans_AR){
                         case "1":
                             loop = false;
+                            break;
                         case "E":
                             loop = false;
                             update_AR_loop = false;
                             choose = false;
+                            break;
                         case "0":
                             loop = false;
                             update_AR_loop = false;
                             choose = true;
+                            break;
                         default:
                             System.out.println("INPUT ERROR - Please enter a valid option");
+                            break;
                     }
                 }
             }
