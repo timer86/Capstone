@@ -437,4 +437,40 @@ public class ArtistServiceTest {
         verify(artistDAO).getAllArtists();
     }
 
+    @Test
+    public void testGetArtistsByGenre_Success() {
+        when(artistDAO.getAllArtists()).thenReturn(List.of(
+                new Artist("A001", "Bon Jovi", "Rock", List.of("T001")),
+                new Artist("A002", "Elvis Presley", "Rock", List.of("T002")),
+                new Artist("A003", "Mozart", "Classical", List.of("T003"))
+        ));
+
+        List<Artist> artists = artistService.getArtistsByGenre("Rock");
+
+        assertEquals(2, artists.size());
+        assertEquals("Bon Jovi", artists.get(0).getName());
+    }
+
+    @Test
+    public void testGetArtistsByGenre_NoArtistsFound() {
+        when(artistDAO.getAllArtists()).thenReturn(List.of());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getArtistsByGenre("Pop")
+        );
+
+        assertEquals("No artists found for genre: Pop", exception.getMessage());
+    }
+
+    @Test
+    public void testGetArtistsByGenre_NullOrEmptyGenre_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getArtistsByGenre(null)
+        );
+
+        assertEquals("Genre cannot be null or empty", exception.getMessage());
+    }
+
+
+
 }

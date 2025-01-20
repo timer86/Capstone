@@ -135,6 +135,7 @@ public class ArtistService {
     }
 
 
+
     public String getGenreById(String artistId) {
         Artist artist = artistDao.getArtistById(artistId);
         if (artist == null) {
@@ -172,6 +173,22 @@ public class ArtistService {
             throw new IllegalArgumentException("Artist with ID " + artistId + " does not exist");
         }
         return artist;
+    }
+
+    public List<Artist> getArtistsByGenre(String genre) {
+        if (genre == null || genre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Genre cannot be null or empty");
+        }
+
+        List<Artist> artists = artistDao.getAllArtists().stream()
+                .filter(artist -> artist.getGenre().equalsIgnoreCase(genre))
+                .toList();
+
+        if (artists.isEmpty()) {
+            throw new IllegalArgumentException("No artists found for genre: " + genre);
+        }
+
+        return artists;
     }
 
 
