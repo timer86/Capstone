@@ -473,4 +473,94 @@ public class ArtistServiceTest {
 
 
 
+    @Test
+    public void testGetArtistsByGenre_MixedCaseGenre() {
+        when(artistDAO.getAllArtists()).thenReturn(List.of(
+                new Artist("A001", "Queen", "Rock", List.of("T001")),
+                new Artist("A002", "Bach", "Classical", List.of("T002"))
+        ));
+
+        List<Artist> artists = artistService.getArtistsByGenre("rock");
+
+        assertEquals(1, artists.size(), "Should return 1 artist for genre 'rock'");
+        assertEquals("Queen", artists.get(0).getName());
+        verify(artistDAO, times(1)).getAllArtists();
+    }
+
+    @Test
+    public void testGetArtistsByGenre_CaseInsensitiveMatch() {
+        when(artistDAO.getAllArtists()).thenReturn(List.of(
+                new Artist("A001", "Metallica", "Metal", List.of("T001")),
+                new Artist("A002", "Bach", "Classical", List.of("T002"))
+        ));
+
+        List<Artist> artists = artistService.getArtistsByGenre("METAL");
+
+        assertEquals(1, artists.size(), "Should return 1 artist for genre 'METAL' case insensitive");
+        assertEquals("Metallica", artists.get(0).getName());
+        verify(artistDAO, times(1)).getAllArtists();
+    }
+
+    @Test
+    public void testUpdateArtist_NotFound_ThrowsException() {
+        when(artistDAO.getArtistById("A001")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.updateArtist(new Artist("A001", "New Artist", "Rock", List.of("T001")))
+        );
+
+        assertEquals("Artist does not exist - A001", exception.getMessage());
+        verify(artistDAO).getArtistById("A001");
+    }
+
+    @Test
+    public void testDeleteArtist_Success() {
+        Artist existingArtist = new Artist("A001", "Bon Jovi", "Rock", List.of("T001"));
+        when(artistDAO.getArtistById("A001")).thenReturn(existingArtist);
+        when(artistDAO.deleteArtist("A001")).thenReturn(true);
+
+        boolean result = artistService.deleteArtist("A001");
+
+        assertTrue(result);
+        verify(artistDAO).deleteArtist("A001");
+    }
+
+    @Test
+    public void testDeleteArtist_NotFound_ThrowsException() {
+        when(artistDAO.getArtistById("A999")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.deleteArtist("A999")
+        );
+
+        assertEquals("Artist with ID A999 does not exist", exception.getMessage());
+        verify(artistDAO).getArtistById("A999");
+    }
+
+    @Test
+    public void testGetTracksByArtistId_ArtistNotFound_ThrowsException() {
+        when(artistDAO.getArtistById("A999")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.getTracksByArtistId("A999")
+        );
+
+        assertEquals("Artist with ID A999 does not exist", exception.getMessage());
+    }
+
+
+    @Test
+    public void testCreateArtist_EmptyOrWhitespaceName_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.createArtist("A001", "  ", "Rock", List.of("T001"))
+        );
+        assertEquals("Artist name cannot be null or empty", exception.getMessage());
+
+        exception = assertThrows(IllegalArgumentException.class, () ->
+                artistService.createArtist("A001", "", "Rock", List.of("T001"))
+        );
+        assertEquals("Artist name cannot be null or empty", exception.getMessage());
+    }
+
+
 }
