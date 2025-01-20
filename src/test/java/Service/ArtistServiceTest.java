@@ -372,6 +372,38 @@ public class ArtistServiceTest {
         verify(artistDAO).getArtistById("A001");
     }
 
+    @Test
+    public void testGetArtistDetailsById_Success() {
+        // Mock dell'artista esistente
+        Artist mockArtist = new Artist("A001", "Bon Jovi", "Rock", List.of("T001", "T002"));
+        when(artistDAO.getArtistById("A001")).thenReturn(mockArtist);
+
+        // Metodo da testare
+        Artist artist = artistService.getArtistDetailsById("A001");
+
+        // Verifiche
+        assertNotNull(artist, "The retrieved artist should not be null");
+        assertEquals("A001", artist.getId());
+        assertEquals("Bon Jovi", artist.getName());
+        assertEquals("Rock", artist.getGenre());
+        assertEquals(List.of("T001", "T002"), artist.getTrackIds());
+
+        // Verifica che il metodo sia stato chiamato correttamente
+        verify(artistDAO).getArtistById("A001");
+    }
+
+    @Test
+    public void testGetArtistDetailsById_Fails() {
+        // Simulazione di artista non esistente
+        when(artistDAO.getArtistById("INVALID_ID")).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            artistService.getArtistDetailsById("INVALID_ID");
+        });
+
+        assertEquals("Artist with ID INVALID_ID does not exist", exception.getMessage());
+        verify(artistDAO).getArtistById("INVALID_ID");
+    }
 
 
 

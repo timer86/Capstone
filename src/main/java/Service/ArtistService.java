@@ -156,7 +156,13 @@ public class ArtistService {
         return tracks;
     }
 
-
+    public Artist getArtistDetailsById(String artistId) {
+        Artist artist = artistDao.getArtistById(artistId);
+        if (artist == null) {
+            throw new IllegalArgumentException("Artist with ID " + artistId + " does not exist");
+        }
+        return artist;
+    }
 
 
 
