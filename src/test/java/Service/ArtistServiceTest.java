@@ -406,5 +406,35 @@ public class ArtistServiceTest {
     }
 
 
+    @Test
+    public void testFindArtistIDByTitle_Success() {
+        ArtistService artistService1  = new ArtistService(trackDao, artistDAO);
+        when(artistDAO.getAllArtists()).thenReturn(List.of(
+                new Artist("A001","Giorgio","Rock", List.of("T001")),
+                new Artist("A002", "Peppuzzo", "Metal", List.of("T002"))
+        ));
+        Artist artist  = artistService1.getArtistByName("Giorgio");
+
+        assertNotNull(artist, "The retrieved artist should not be null");
+        assertEquals("A001", artist.getId());
+
+    }
+
+    @Test
+    public void testFindArtistID_NullorEmptyTitle_ThrowsException(){
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> artistService.getArtistByName(null));
+        assertEquals("Artist name cannot be null or empty",exception.getMessage());
+        Exception exception1 = assertThrows(IllegalArgumentException.class, () -> artistService.getArtistByName(" "));
+        assertEquals("Artist name cannot be null or empty",exception.getMessage());
+
+    }
+
+    @Test
+    public void testFindArtistID_notFound(){
+        when(artistDAO.getAllArtists()).thenReturn(List.of(new Artist("A001","Giorgio","Rock", List.of("T001"))));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> artistService.getArtistByName("Pluffy"));
+        assertEquals("Artist with name Pluffy does not exist", exception.getMessage());
+        verify(artistDAO).getAllArtists();
+    }
 
 }
