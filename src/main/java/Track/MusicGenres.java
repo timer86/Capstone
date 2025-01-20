@@ -9,21 +9,21 @@ import java.util.List;
 
 public class MusicGenres {
     public static final List<String> ALLOWED_GENRES = Arrays.asList(
-      "Rock",
-      "Pop",
-      "Jazz",
-      "Hip-Hop",
-      "Classical",
-      "Electronic",
-      "Country",
-      "Reggae",
-      "House",
-      "Techno",
-      "Metal",
-      "Rap",
-      "Trap",
-      "Naples",
-      "Neomelodic"
+      "ROCK",
+      "POP",
+      "JAZZ",
+      "HIP-HOP",
+      "CLASSICAL",
+      "ELECTRONIC",
+      "COUNTRY",
+      "REGGAE",
+      "HOUSE",
+      "TECHNO",
+      "METAL",
+      "RAP",
+      "TRAP",
+      "NAPLES",
+      "NEOMELODIC"
 
     );
     private MusicGenres() {}

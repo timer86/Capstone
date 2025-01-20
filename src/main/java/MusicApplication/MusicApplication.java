@@ -39,6 +39,7 @@ public class MusicApplication {
             while(loop){
                 System.out.println("Please choose what you would like to do\n 1) - Update the Music Application\n 2) - Consult Music Application \n E) for Exit");
                 ans = input.next().trim();
+                System.out.println(" ");
                 switch(ans){
                     case "1":
                         loop = false;
@@ -63,6 +64,7 @@ public class MusicApplication {
         Scanner input_UM = new Scanner(System.in);
         String ans_UM = "";
         boolean choose = false;
+        System.out.println(" ");
         for(int i=1 ; i<=10 ; i++){
             System.out.print("*");
         }
@@ -73,7 +75,7 @@ public class MusicApplication {
         System.out.println(" ");
         boolean update_MM_loop = true;
         while(update_MM_loop){
-            System.out.println("Please choose what you would like to update \n 1) Update one Track \n 2) Update an Artist \n 0) Previous Menu\n E) for Exit");
+            System.out.println("Please choose what you would like to update \n 1) Update Track \n 2) Update Artist \n 0) Previous Menu\n E) for Exit");
             ans_UM = input_UM.next();
             switch(ans_UM){
                 case "1":
@@ -93,7 +95,7 @@ public class MusicApplication {
                     choose = false;
                     break;
                 default:
-                    update_MM_loop = true;
+                    System.out.println("INPUT ERROR - Please enter a valid option\n");
                     break;
             }
         }
@@ -115,7 +117,7 @@ public class MusicApplication {
         List<String> artistlist = new ArrayList<String>();
         String single_artist = "";
 
-
+        System.out.println(" ");
         for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
@@ -123,7 +125,7 @@ public class MusicApplication {
         for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
-        System.out.println("");
+        System.out.println(" ");
         boolean update_TR_loop = true;
         while (update_TR_loop) {
             ans_TR = "2";/*By Default we set ans_TR = 2 because is a variable used to mark Create a New Track*/
@@ -131,16 +133,16 @@ public class MusicApplication {
             /*TITLE - NOT ALLOWED EMPTY*/
             /*ASK TITLE if not received*/
             if (title.isEmpty()) {
-                System.out.println("TITLE IS EMPTY WE GO TO ASK IT");
                 loop = true;
                 updateTR = false;
                 while (loop) {
                     System.out.println("Please provide the TITLE of the Track");
                     t_title = input_TR.next().trim();
+                    System.out.println(" ");
                     if (!t_title.isEmpty()) {
                         loop = false;
                     } else {
-                        System.out.println("INPUT ERROR - Please enter a valid Name of Artist");
+                        System.out.println("INPUT ERROR - Please enter a valid Name of Artist\n");
                     }
                 }
                 title = t_title;
@@ -209,33 +211,45 @@ public class MusicApplication {
             if (ans_TR.equals("2")){
 
                 /*ALBUM - IF EMPTY IS A SINGLE TRACK*/
-                System.out.println("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - let empty");
-                album = input_TR.next();
-                if (album.isEmpty()) {
-                    album = "SINGLE";
-                }
+                System.out.println("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - type SINGLE");
+                album = input_TR.nextLine().trim();
+                System.out.println(" ");
+
+                //if (album.isEmpty()) {
+                //    System.out.println("ENTER EMPTY VALUE - Album = SINGLE");
+                //    album = "SINGLE";
+                //}
+
 
                 /*GENRE - ALLOWED ONLY GENRE IN MUSICGENRES LIST*/
                 loop = true;
                 while (loop) {
-                    genre = (input_TR.next("Please provide the GENRE of the Track").trim());
+                    System.out.println("Please provide the GENRE of the Track " + title);
+                    genre = input_TR.next().trim().toUpperCase();
                     if (MusicGenres.ALLOWED_GENRES.contains(genre)) {
                         loop = false;
                     } else {
-                        System.out.println("INPUT ERROR - Please enter a valid Genre");
+                        System.out.println("INPUT ERROR");
+                        System.out.println("Genre " + genre + " is not allowed\nPlease enter a valid Genre from the list:\n");
                         for (int i = 0; i < MusicGenres.ALLOWED_GENRES.size(); i++) {
-                            System.out.println(MusicGenres.ALLOWED_GENRES.get(i));
+                            if (i % 5 ==0 && i>5) {
+                                System.out.println(" ");
+                            }
+                            System.out.print(MusicGenres.ALLOWED_GENRES.get(i) + ", ");
                         }
+                        System.out.println(" ");
                     }
+                    System.out.println(" ");
                 }
 
                 /*YEAR - ALLOWED ONLY 1900 - today*/
                 loop = true;
                 while (loop) {
                     try {
-                        System.out.print("Please provide the YEAR of the Track");
+                        System.out.print("Please provide the YEAR of the Track\n");
                         yyyy = input_TR.nextInt();
                     } catch (InputMismatchException ignored) {
+                        System.out.print("year is " + yyyy);
                         yyyy = 0;
                     }
 
@@ -243,14 +257,15 @@ public class MusicApplication {
                     if (yyyy >= 1900 && yyyy <= year) {
                         loop = false;
                     } else {
-                        System.out.println("INPUT ERROR - Please enter a valid Year from 1900 to " + year);
+                        System.out.println("INPUT ERROR - Please enter a valid Year from 1900 to " + year + "\n");
                     }
                 }
 
                 /*ARTIST LIST - EMPTY to finish*/
                 loop = true;
                 while (loop) {
-                    single_artist = input_TR.next("Please provide the ARTIST of the Track " + title);
+                    System.out.println("Please provide the ARTIST of the Track " + title);
+                    single_artist = input_TR.nextLine();
                     /* 1st Artist cannot be empty*/
                     if (!single_artist.isEmpty()) {
                         artistlist.add(single_artist);
@@ -263,11 +278,11 @@ public class MusicApplication {
                 loop = true;
                 while (loop) {
                     System.out.println("please provide additional ARTIST of the Track " + title + "\n Artist List:");
-                    for (int i = 0; i < artistlist.size(); i++) {
-                        System.out.println(artistlist.get(i));
+                    for (String s : artistlist) {
+                        System.out.print(s + ", ");
                     }
                     System.out.println("Let empty if there is no more Artist to add");
-                    single_artist = input_TR.next();
+                    single_artist = input_TR.nextLine();
                     if (!single_artist.isEmpty()) {
                         artistlist.add(single_artist);
                     } else {
@@ -480,10 +495,11 @@ public class MusicApplication {
                 ts.updateTrack(upd_track);
             }
 
-            if (updateTR == false){
+            if (!updateTR){
                 loop=true;
                 while (loop) {
-                    String ans = input_TR.next("Jobs Done \n 1) Update new Track \n E) for Exit \n 0) Previous menu");
+                    System.out.println("Jobs Done \n 1) Update new Track \n E) for Exit \n 0) Previous menu\n");
+                    ans_TR = input_TR.next();
                     switch (ans_TR){
                         case "1":
                             loop = false;
@@ -499,7 +515,7 @@ public class MusicApplication {
                             choose = true;
                             break;
                         default:
-                            System.out.println("INPUT ERROR - Please enter a valid option");
+                            System.out.println("INPUT ERROR - Please enter a valid option\n");
                             break;
                     }
                 }
