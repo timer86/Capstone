@@ -124,6 +124,16 @@ public class ArtistService {
     }
 
 
+    public Artist getArtistByName(String artistName) {
+        if (artistName == null || artistName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Artist name cannot be null or empty");
+        }
+        return artistDao.getAllArtists().stream()
+                .filter(artist -> artist.getName().equalsIgnoreCase(artistName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Artist with name " + artistName + " does not exist"));
+    }
+
 
     public String getGenreById(String artistId) {
         Artist artist = artistDao.getArtistById(artistId);
