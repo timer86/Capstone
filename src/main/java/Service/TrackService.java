@@ -11,6 +11,7 @@ import Artist.Artist;
 import Track.MusicGenres;
 
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -209,6 +210,23 @@ public class TrackService {
         }
         return track;
     }
+
+
+    public List<Track> getTracksByGenre(String genre) {
+        if (genre == null || genre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Genre cannot be null or empty");
+        }
+        return trackDao.getTracksByGenre(genre);
+    }
+
+    public List<Track> getTracksByYear(int year) {
+        if (year < 1900 || year > LocalDate.now().getYear()) {
+            throw new IllegalArgumentException("Year must be between 1900 and " + LocalDate.now().getYear());
+        }
+        return trackDao.getTracksByYear(year);
+    }
+
+
 
     public List<Track> getAllTracks() {
         return trackDao.getAllTracks();

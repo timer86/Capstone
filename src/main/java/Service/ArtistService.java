@@ -89,6 +89,10 @@ public class ArtistService {
     }
 
     public Artist updateArtist(Artist artist) {
+        if (artist == null) {
+            throw new IllegalArgumentException("Artist cannot be null");
+        }
+
         // Controlla che l'artista esista
         Artist existingArtist = artistDao.getArtistById(artist.getId());
         if (existingArtist == null) {
@@ -98,6 +102,7 @@ public class ArtistService {
         // Aggiorna l'artista nel DAO
         return artistDao.updateArtist(artist);
     }
+
 
     public List<Artist> getAllArtists() {
         return artistDao.getAllArtists();

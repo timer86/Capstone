@@ -1,4 +1,4 @@
-/* AG 20/01/2025 19:15*/
+// fc 21/01/2025 00:11 am
 
 package MusicApplication;
 import DAO.ArtistDAO;
@@ -11,6 +11,7 @@ import Track.Track;
 import Service.ArtistService;
 import Service.TrackService;
 
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class MusicApplication {
         while (main_loop) {
             boolean loop = true;
             while(loop){
-                System.out.println("Please choose what you would like to do\n 1) - Update the Music Application\n 2) - Consult Music Application \n E) for Exit");
+                System.out.println("\n\n Please choose what you would like to do\n 1) - Update the Music Application\n 2) - Consult Music Application \n E) for Exit");
                 ans = input.nextLine().trim();
                 System.out.println(" ");
                 switch(ans){
@@ -769,23 +770,277 @@ public class MusicApplication {
     }
 
 
-    public static Boolean consultMusicMenu(){
+    public static boolean consultMusicMenu() {
+        String choose = Menu();
+        String Separato;
+        Separato = "-".repeat(50);
+        boolean loop = true;
+        if (choose.equals("Artist Reporting Tool")){
+            Artist_Framework();
+        } else if (choose.equals("Track Reporting Tool")){
+            Track_Framework();
+        } else if (choose.equals("Exit")){
+            System.out.println(Separato);
+            System.out.println("Exiting.. going on Main Menu \n \n \n");
+            System.out.println(Separato);
+            String[] arguments = {};
+             main(arguments);
+        }
+
+        return loop;
+    }
 
 
+    public static String Menu(){
+        String Separato;
+        String choose = "";
+        Separato = "-".repeat(50);
         Scanner input_CM = new Scanner(System.in);
         String ans_CM = "";
-        Boolean choose = false;
-        for(int i=1 ; i<=10 ; i++){
-            System.out.print("*");
-        }
-        System.out.print("  Welcome to the Music Application - CONSULT Section  ");
-        for(int i=1 ; i<=10 ; i++){
-            System.out.print("*");
-        }
+        System.out.println(Separato);
+        System.out.print("  Welcome to the Music Application - CONSULT Section \n ");
+        System.out.println(Separato);
+        System.out.println("Select: \n 1) For Artist Reporting Tool \n 2) For Track Reporting Tool \n E) for Exit");
+        String ans = input_CM.nextLine().trim();
+        boolean jump = false;
+        switch (ans){
+            case "1":
+                jump = true;
+                choose = "Artist Reporting Tool";
+                break;
+            case "2":
+                jump = true;
+                choose = "Track Reporting Tool";
+                break;
+            case "E", "e":
+                jump = true;
+                choose = "Exit";
+                break;
+            default:
+                System.out.println("INPUT ERROR - Please enter a valid option");
+                choose = "nothing";
+                break;
 
-
+        }
 
         return choose;
+    }
+
+
+    public static void Artist_Framework() {
+        ArtistDAO artistDAO = new inMemoryArtistDAO();
+        TrackDAO trackDAO = new inMemoryTrackDAO();
+        ArtistService artistService = new ArtistService(trackDAO, artistDAO);
+        Scanner input = new Scanner(System.in);
+
+        String separato = "-".repeat(50);
+        System.out.println(separato);
+        System.out.println("  Artist Reporting Tool  ");
+        System.out.println(separato);
+        System.out.println("Select:");
+        System.out.println(" 1) Get All Artists");
+        System.out.println(" 2) Get Tracks By Artist ID");
+        System.out.println(" 3) Get Tracks By Artist Name");
+        System.out.println(" 4) Get Artists By Genre");
+        System.out.println(" E) Exit");
+        System.out.print("Your choice: ");
+
+        String ans = input.nextLine().trim();
+
+        switch (ans) {
+            case "1":
+                List<Artist> artists = artistService.getAllArtists();
+                if (artists.isEmpty()) {
+                    System.out.println("No artists found.");
+                } else {
+                    System.out.println("All Artists:");
+                    for (Artist artist : artists) {
+                        System.out.println("ID: " + artist.getId() + ", Name: " + artist.getName() + ", Genre: " + artist.getGenre());
+                    }
+                }
+                break;
+
+            case "2":
+                System.out.print("Enter Artist ID: ");
+                String artistId = input.nextLine().trim();
+                try {
+                    List<Track> tracksById = artistService.getTracksByArtistId(artistId);
+                    System.out.println("Tracks for Artist ID " + artistId + ":");
+                    for (Track track : tracksById) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+
+            case "3":
+                System.out.print("Enter Artist Name: ");
+                String artistName = input.nextLine().trim();
+                try {
+                    Artist artistByName = artistService.getArtistByName(artistName);
+                    List<Track> tracksByName = artistService.getTracksByArtistId(artistByName.getId());
+                    System.out.println("Tracks for Artist " + artistName + ":");
+                    for (Track track : tracksByName) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+
+            case "4":
+                boolean validGenre = false;
+                while (!validGenre) {
+                    System.out.print("Enter Genre: ");
+                    String genre = input.nextLine().trim().toUpperCase();
+                    if (!MusicGenres.ALLOWED_GENRES.contains(genre)) {
+                        System.out.println("Invalid genre. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
+                        System.out.println("Do you want to try again? (Y/N)");
+                        String retry = input.nextLine().trim().toUpperCase();
+                        if (retry.equals("N")) {
+                            return;
+                        }
+                    } else {
+                        validGenre = true;
+                        List<Artist> artistsByGenre = artistService.getArtistsByGenre(genre);
+                        System.out.println("Artists in genre " + genre + ":");
+                        for (Artist artist : artistsByGenre) {
+                            System.out.println("ID: " + artist.getId() + ", Name: " + artist.getName());
+                        }
+                    }
+                }
+                break;
+
+            case "E", "e":
+                System.out.println("Returning to the main menu...");
+                break;
+
+            default:
+                System.out.println("INPUT ERROR - Please enter a valid option.");
+                break;
+        }
+    }
+
+
+    public static void Track_Framework() {
+        TrackDAO trackDAO = new inMemoryTrackDAO();
+        ArtistDAO artistDAO = new inMemoryArtistDAO();
+        TrackService trackService = new TrackService(trackDAO, artistDAO);
+        Scanner input = new Scanner(System.in);
+
+        String separato = "-".repeat(50);
+        System.out.println(separato);
+        System.out.println("  Track Reporting Tool  ");
+        System.out.println(separato);
+        System.out.println("Select:");
+        System.out.println(" 1) Get All Tracks");
+        System.out.println(" 2) Get Tracks By Artist ID");
+        System.out.println(" 3) Get Tracks By Artist Name");
+        System.out.println(" 4) Get Tracks By Title");
+        System.out.println(" 5) Get Tracks By Genre");
+        System.out.println(" 6) Get Tracks By Year");
+        System.out.println(" E) Exit");
+        System.out.print("Your choice: ");
+
+        String ans = input.nextLine().trim();
+
+        switch (ans) {
+            case "1":
+                List<Track> tracks = trackService.getAllTracks();
+                if (tracks.isEmpty()) {
+                    System.out.println("No tracks found.");
+                } else {
+                    System.out.println("All Tracks:");
+                    for (Track track : tracks) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum() + ", Year: " + track.getYear());
+                    }
+                }
+                break;
+
+            case "2":
+                System.out.print("Enter Artist ID: ");
+                String artistId = input.nextLine().trim();
+                try {
+                    List<Track> tracksById = trackService.getTracksByArtistID(artistId);
+                    for (Track track : tracksById) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+
+            case "3":
+                System.out.print("Enter Artist Name: ");
+                String artistName = input.nextLine().trim();
+                try {
+                    Artist artist = new ArtistService(trackDAO, artistDAO).getArtistByName(artistName);
+                    List<Track> tracksByName = trackService.getTracksByArtistID(artist.getId());
+                    for (Track track : tracksByName) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+
+            case "4":
+                System.out.print("Enter Track Title: ");
+                String title = input.nextLine().trim();
+                try {
+                    List<Track> trackByTitle = trackService.getTrackById(title);
+                    for (Track track : trackByTitle) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                break;
+
+            case "5":
+                boolean validGenre = false;
+                while (!validGenre) {
+                    System.out.print("Enter Genre: ");
+                    String genre = input.nextLine().trim().toUpperCase();
+                    if (!MusicGenres.ALLOWED_GENRES.contains(genre)) {
+                        System.out.println("Invalid genre. Allowed genres: " + MusicGenres.ALLOWED_GENRES);
+                        System.out.println("Do you want to try again? (Y/N)");
+                        String retry = input.nextLine().trim().toUpperCase();
+                        if (retry.equals("N")) {
+                            return;
+                        }
+                    } else {
+                        validGenre = true;
+                        List<Track> tracksByGenre = trackService.getTracksByGenre(genre);
+                        for (Track track : tracksByGenre) {
+                            System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                        }
+                    }
+                }
+                break;
+
+            case "6":
+                System.out.print("Enter Year: ");
+                try {
+                    int year = Integer.parseInt(input.nextLine().trim());
+                    List<Track> tracksByYear = trackService.getTracksByYear(year);
+                    for (Track track : tracksByYear) {
+                        System.out.println("Title: " + track.getTitle() + ", Album: " + track.getAlbum());
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid year format.");
+                }
+                break;
+
+            case "E", "e":
+                System.out.println("Returning to the main menu...");
+                break;
+
+            default:
+                System.out.println("INPUT ERROR - Please enter a valid option.");
+                break;
+        }
     }
 
 
