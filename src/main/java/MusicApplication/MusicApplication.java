@@ -2,6 +2,8 @@ package MusicApplication;
 import Track.MusicGenres;
 import Artist.Artist;
 import Track.Track;
+import Service.ArtistService;
+import Service.TrackService;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -124,16 +126,17 @@ public class MusicApplication {
                 }
             }
 
-            Track track = new Track("","","","","");
-            String track_id = track.getIdByTitle(title);
+            Track track = new
+
+            String track_id = track.getId();
 
             if(!track_id.isEmpty()){
                 boolean loop = true;
                 while (loop) {
                     System.out.println("The Song " + title + " already exist\n");
-                    System.out.println("Genre: " + track.getGenre(track_id));
-                    System.out.println("Year: " + track.getYear(track_id));
-                    System.out.println("Album: " + track.getAlbum(track_id));
+                    System.out.println("Genre: " + track.getGenre());
+                    System.out.println("Year: " + track.getYear());
+                    System.out.println("Album: " + track.getAlbum());
                     System.out.print("Artist list: ");
                     List<String> artistidlist = new ArrayList<String>();
                     artistidlist = track.getArtistIds(track_id);
