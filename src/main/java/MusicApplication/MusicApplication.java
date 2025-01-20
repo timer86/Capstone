@@ -103,7 +103,7 @@ public class MusicApplication {
     }
 
     public static Boolean updateTrack (String title) {
-        Scanner input_TR = new Scanner(System.in);
+
 
         String ans_TR = "";
         String album = "";
@@ -136,8 +136,9 @@ public class MusicApplication {
                 loop = true;
                 updateTR = false;
                 while (loop) {
+                    Scanner input_Title = new Scanner(System.in);
                     System.out.println("Please provide the TITLE of the Track");
-                    t_title = input_TR.next().trim();
+                    t_title = input_Title.next().trim();
                     System.out.println(" ");
                     if (!t_title.isEmpty()) {
                         loop = false;
@@ -179,6 +180,7 @@ public class MusicApplication {
                         Artist artist = as.getArtistDetailsById(artistidlist.get(i));
                         System.out.print(artist.getName()+", ");
                     }
+                    Scanner input_TR = new Scanner(System.in);
                     System.out.println("Do you want to update or create a new track?\n 1 - Update\n 2 - Create");
                     ans_TR = input_TR.next().trim();
                     switch(ans_TR){
@@ -211,21 +213,22 @@ public class MusicApplication {
             if (ans_TR.equals("2")){
 
                 /*ALBUM - IF EMPTY IS A SINGLE TRACK*/
-                System.out.println("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - type SINGLE");
-                album = input_TR.nextLine().trim();
+                Scanner input_Album = new Scanner(System.in);
+                System.out.println("Is " + title + " part of a music album?\n if YES - provide the ALBUM TITLE\n if NO - let empty");
+                album = input_Album.nextLine().trim();
                 System.out.println(" ");
 
-                //if (album.isEmpty()) {
-                //    System.out.println("ENTER EMPTY VALUE - Album = SINGLE");
-                //    album = "SINGLE";
-                //}
+                if (album.isEmpty()) {
+                    album = "SINGLE";
+                }
 
 
                 /*GENRE - ALLOWED ONLY GENRE IN MUSICGENRES LIST*/
                 loop = true;
                 while (loop) {
+                    Scanner input_Genre = new Scanner(System.in);
                     System.out.println("Please provide the GENRE of the Track " + title);
-                    genre = input_TR.next().trim().toUpperCase();
+                    genre = input_Genre.next().trim().toUpperCase();
                     if (MusicGenres.ALLOWED_GENRES.contains(genre)) {
                         loop = false;
                     } else {
@@ -245,9 +248,10 @@ public class MusicApplication {
                 /*YEAR - ALLOWED ONLY 1900 - today*/
                 loop = true;
                 while (loop) {
+                    Scanner input_Year = new Scanner(System.in);
                     try {
                         System.out.print("Please provide the YEAR of the Track\n");
-                        yyyy = input_TR.nextInt();
+                        yyyy = input_Year.nextInt();
                     } catch (InputMismatchException ignored) {
                         System.out.print("year is " + yyyy);
                         yyyy = 0;
@@ -264,8 +268,10 @@ public class MusicApplication {
                 /*ARTIST LIST - EMPTY to finish*/
                 loop = true;
                 while (loop) {
+                    Scanner input_Artist = new Scanner(System.in);
+                    System.out.println(" ");
                     System.out.println("Please provide the ARTIST of the Track " + title);
-                    single_artist = input_TR.nextLine();
+                    single_artist = input_Artist.nextLine();
                     /* 1st Artist cannot be empty*/
                     if (!single_artist.isEmpty()) {
                         artistlist.add(single_artist);
@@ -277,12 +283,13 @@ public class MusicApplication {
 
                 loop = true;
                 while (loop) {
+                    Scanner input_Additional_Artist = new Scanner(System.in);
                     System.out.println("please provide additional ARTIST of the Track " + title + "\n Artist List:");
                     for (String s : artistlist) {
                         System.out.print(s + ", ");
                     }
                     System.out.println("Let empty if there is no more Artist to add");
-                    single_artist = input_TR.nextLine();
+                    single_artist = input_Additional_Artist.nextLine();
                     if (!single_artist.isEmpty()) {
                         artistlist.add(single_artist);
                     } else {
@@ -295,12 +302,22 @@ public class MusicApplication {
                 /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
                 for (int i = 0; i < artistlist.size(); i++) {
                     single_artist = artistlist.get(i);
-                    String artist_id = as.getArtistByName(single_artist).getId();
+                    String artist_id = "";
+                    try{
+                        artist_id = as.getArtistByName(single_artist).getId();
+                    }
+                    catch(IllegalArgumentException e){
+                        artist_id = "";
+                    }
+
                     if (artist_id == null || artist_id.isEmpty()){
+                        System.out.println(" ");
                         System.out.println("WARNING the Artist " + single_artist + " is not in the database");
                         loop = true;
                         while (loop) {
-                            String ans = input_TR.next("Do you want to add this artist now?").toUpperCase().trim();
+                            Scanner input_Artist_list = new Scanner(System.in);
+                            System.out.println("Do you want to add this artist now?");
+                            String ans = input_Artist_list.next().toUpperCase().trim();
                             switch (ans) {
                                 case "Y","YES":
                                     if (updateArtist(single_artist)) {
@@ -330,7 +347,8 @@ public class MusicApplication {
             else {//(ans_TR.equals("1")
                 loop = true;
                 while (loop) {
-                    String new_title = input_TR.next("Please provide the TITLE of the Track tu UPDATE").trim();
+                    Scanner input_Tytle = new Scanner(System.in);
+                    String new_title = input_Tytle.next("Please provide the TITLE of the Track tu UPDATE").trim();
                     if (!new_title.isEmpty() && !new_title.equals(title)) {
                         loop = false;
                     } else {
@@ -356,8 +374,8 @@ public class MusicApplication {
                         String artist_id = ts.getArtistsByTrackId(track_id).get(i).getId();
                         System.out.print(artistdao.getArtistById(artist_id).getName() + ", ");
                     }
-
-                    ans_TR = input_TR.next();
+                    Scanner input_TR = new Scanner(System.in);
+                    ans_TR = input_TR.nextLine();
 
                     switch (ans_TR) {
                         case "1":
@@ -446,11 +464,13 @@ public class MusicApplication {
                             loop2 = true;
 
                             while (loop2) {
-                                System.out.println("please provide additional ARTIST of the Track " + title);
+                                System.out.println("\nplease provide additional ARTIST of the Track " + title);
                                 for (int i = 0; i < artistlist.size(); i++) {
                                     System.out.println(artistlist.get(i));
                                 }
+                                System.out.println(" ");
                                 System.out.println("Let empty if there is no more Artist to add");
+                                System.out.println(" ");
                                 single_artist = input_TR.next();
                                 if (!single_artist.isEmpty()) {
                                     artistlist.add(single_artist);
@@ -499,6 +519,7 @@ public class MusicApplication {
                 loop=true;
                 while (loop) {
                     System.out.println("Jobs Done \n 1) Update new Track \n E) for Exit \n 0) Previous menu\n");
+                    Scanner input_TR = new Scanner(System.in);
                     ans_TR = input_TR.next();
                     switch (ans_TR){
                         case "1":
@@ -568,15 +589,19 @@ public class MusicApplication {
         for (int i = 1; i <= 10; i++) {
             System.out.print("*");
         }
+        System.out.println();
+
         boolean update_AR_loop = true;
         while (update_AR_loop) {
             ans_AR = "2";/*By Default we set ans_AR = 2 because is a variable used to mark Create a New Artist*/
             /*ASK ARTIST NAME if not received*/
-            if (!name.isEmpty()) {
+            if (name.isEmpty()) {
                 loop = true;
                 updateAR = false;
                 while (loop) {
-                    a_name = input_AR.next("Please provide a NAME of Artist").trim();
+                    System.out.println("Please provide a NAME of Artist");
+                    a_name = input_AR.nextLine().trim();
+                    System.out.println("");
                     if (!a_name.isEmpty()) {
                         loop = false;
                     } else {
@@ -594,28 +619,45 @@ public class MusicApplication {
             ArtistDAO artistdao = new inMemoryArtistDAO();
             TrackService ts = new TrackService(trackdao, artistdao);
             ArtistService as = new ArtistService(trackdao, artistdao);
-            String artist_id = as.getArtistByName(a_name).getId();//getArtistByName return an Artist, adding .getId() I retrieve only the id
+            String artist_id = "";
+            try{
+                artist_id = as.getArtistByName(name).getId();//getArtistByName return an Artist, adding .getId() I retrieve only the id
+            }  catch(IllegalArgumentException e){
+                artist_id = "";
+            }
 
 
             /*GENRE - ALLOWED ONLY GENRE IN MUSICGENRES LIST*/
             loop = true;
             while (loop) {
-                genre = (input_AR.next("Please provide the GENRE of the Artist").trim());
+                Scanner input_Genre = new Scanner(System.in);
+                System.out.println("Please provide the GENRE of the Artist " + name);
+                genre = input_Genre.next().trim().toUpperCase();
                 if (MusicGenres.ALLOWED_GENRES.contains(genre)) {
                     loop = false;
                 } else {
-                    System.out.println("INPUT ERROR - Please enter a valid Genre");
+                    System.out.println("INPUT ERROR");
+                    System.out.println("Genre " + genre + " is not allowed\nPlease enter a valid Genre from the list:\n");
                     for (int i = 0; i < MusicGenres.ALLOWED_GENRES.size(); i++) {
-                        System.out.println(MusicGenres.ALLOWED_GENRES.get(i));
+                        if (i % 5 ==0 && i>5) {
+                            System.out.println(" ");
+                        }
+                        System.out.print(MusicGenres.ALLOWED_GENRES.get(i) + ", ");
                     }
+                    System.out.println(" ");
                 }
+                System.out.println(" ");
             }
+
 
 
             /*TRACK LIST - EMPTY to finish*/
             loop = true;
             while (loop) {
-                single_track = input_AR.next("Please provide the TRACK of the Artist " + name);
+                Scanner input_Track = new Scanner(System.in);
+                System.out.println("Please provide the TRACK of the Artist " + name);
+                single_track = input_Track.nextLine();
+                System.out.println("");
                 /* 1st Artist cannot be empty*/
                 if (!single_track.isEmpty()) {
                     tracklist.add(single_track);
@@ -627,12 +669,13 @@ public class MusicApplication {
 
             loop = true;
             while (loop) {
+                Scanner input_Track_list = new Scanner(System.in);
                 System.out.println("please provide additional TRACK of the Artist " + name + "\n Track List:");
-                for (int i = 0; i < tracklist.size(); i++) {
-                    System.out.println(tracklist.get(i));
+                for (String s : tracklist) {
+                    System.out.println(s);
                 }
                 System.out.println("Let empty if there is no more Artist to add");
-                single_track = input_AR.next();
+                single_track = input_Track_list.next();
                 if (!single_track.isEmpty()) {
                     tracklist.add(single_track);
                 } else {
@@ -648,7 +691,9 @@ public class MusicApplication {
                     System.out.println("WARNING the Track " + single_track + " is not in the database");
                     loop = true;
                     while (loop) {
-                        String ans = input_AR.next("Do you want to add this track now?").toUpperCase().trim();
+                        Scanner input = new Scanner(System.in);
+                        System.out.println("Do you want to add this track now?\n Y - N");
+                        String ans = input.nextLine().toUpperCase().trim();
                         switch (ans) {
                             case "Y","YES":
                                 if (updateTrack(single_track)) {
@@ -674,11 +719,12 @@ public class MusicApplication {
             Artist upd_artist = new Artist(artist_id,name,genre, tracklist);
             as.updateArtist(upd_artist);
 
-            if (updateAR == false){
+            if (!updateAR){
                 loop=true;
                 while (loop) {
-                    String ans = input_AR.next("Jobs Done\n 1 - Update new ARTIST \n E - for Exit\n 0 - Previous menu");
-                    switch (ans_AR){
+                    Scanner input = new Scanner(System.in);
+                    String ans = input.next("Jobs Done\n 1 - Update new ARTIST \n E - for Exit\n 0 - Previous menu");
+                    switch (ans){
                         case "1":
                             loop = false;
                             break;
@@ -705,6 +751,7 @@ public class MusicApplication {
         }
         return choose;
     }
+
 
     public static Boolean consultMusicMenu(){
 
