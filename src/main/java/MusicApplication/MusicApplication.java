@@ -74,7 +74,7 @@ public class MusicApplication {
             ans_UM = input_UM.next();
             switch(ans_UM){
                 case "1":
-                    update_MM_loop = updateTrack();
+                    update_MM_loop = updateTrack("");
                     choose = update_MM_loop;
                 case "2":
                     update_MM_loop = updateArtist("");
@@ -432,7 +432,7 @@ public class MusicApplication {
                                 String id = artist.getIdByName(single_artist);
                                 if (id.isEmpty()) {
                                     System.out.println("WARNING the Artist " + single_artist + " is not in the database");
-                                    Boolean loop2 = true;
+                                    loop2 = true;
                                     while (loop2) {
                                         String ans = input_TR.next("Do you want to add this artist now?").toUpperCase().trim();
                                         switch (ans) {
