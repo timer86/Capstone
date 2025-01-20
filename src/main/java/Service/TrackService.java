@@ -202,7 +202,7 @@ public class TrackService {
         // Genera un ID unico basato sul nome e sul timestamp
         return name.replaceAll("\\s+", "").toUpperCase() + "_" + System.currentTimeMillis();
     }
-    public Track getTrackbyId(String id) {
+    public Track getSingleTrackbyId(String id) {
         Track track = trackDao.getTrackById(id);
         if (track == null){
             throw new IllegalArgumentException("The Track with this ID: " + id + " does not exist");

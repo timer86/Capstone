@@ -325,7 +325,7 @@ public class TrackServiceTest {
         Track mockTrack = new Track(trackId, 2022, "Rock", "Rock Album", "Rock Song", List.of("A001"));
         when(trackDAO.getTrackById(trackId)).thenReturn(mockTrack);
 
-        Track retrievedTrack = trackService.getTrackbyId(trackId);
+        Track retrievedTrack = trackService.getSingleTrackbyId(trackId);
 
         assertNotNull(retrievedTrack);
         assertEquals(trackId, retrievedTrack.getId());
@@ -484,6 +484,7 @@ public class TrackServiceTest {
         assertNotNull(track);
         assertEquals("Chop Suey", track.getTitle());
         assertEquals("Rock", track.getGenre());
+
     }
 
     @Test
@@ -741,7 +742,7 @@ public class TrackServiceTest {
 
     @Test
     public void testGetTrackById_NullId_ThrowsException() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getTrackbyId(null));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> trackService.getSingleTrackbyId(null));
         assertEquals("The Track with this ID: null does not exist", exception.getMessage());
     }
 
@@ -772,12 +773,12 @@ public class TrackServiceTest {
     @Test
     public void testGetTrackById_NullOrEmptyId_ThrowsException() {
         Exception exception1 = assertThrows(IllegalArgumentException.class, () ->
-                trackService.getTrackbyId(null)
+                trackService.getSingleTrackbyId(null)
         );
         assertEquals("The Track with this ID: null does not exist", exception1.getMessage());
 
         Exception exception2 = assertThrows(IllegalArgumentException.class, () ->
-                trackService.getTrackbyId("")
+                trackService.getSingleTrackbyId("")
         );
         assertEquals("The Track with this ID:  does not exist", exception2.getMessage());
     }
