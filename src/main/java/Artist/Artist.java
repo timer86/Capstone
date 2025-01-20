@@ -39,11 +39,9 @@ public class Artist {
     public String getId() {
         return id;
     }
-
     public String getGenre() {
         return genre;
     }
-
     public String getName() {
         return name;
     }
