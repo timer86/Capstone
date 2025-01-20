@@ -12,6 +12,7 @@ import java.util.*;
 public interface ArtistDAO {
     Artist createArtist(Artist artist);
     Artist getArtistById(String id);
+    //List<Artist> getArtistByGenre(String genre);
     public String getGenreById(String id);
     List<Artist> getAllArtists();
     Artist updateArtist(Artist artist);
