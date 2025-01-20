@@ -1,4 +1,4 @@
-/* AG 20/01/2025 15:10*/
+/* AG 20/01/2025 19:00*/
 
 package MusicApplication;
 import DAO.ArtistDAO;
@@ -554,19 +554,6 @@ public class MusicApplication {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static Boolean updateArtist (String name){
 
         Scanner input_AR = new Scanner(System.in);
@@ -652,30 +639,31 @@ public class MusicApplication {
 
 
             /*TRACK LIST - EMPTY to finish*/
+            /*ARTIST LIST - EMPTY to finish*/
             loop = true;
             while (loop) {
                 Scanner input_Track = new Scanner(System.in);
+                System.out.println(" ");
                 System.out.println("Please provide the TRACK of the Artist " + name);
                 single_track = input_Track.nextLine();
-                System.out.println("");
                 /* 1st Artist cannot be empty*/
                 if (!single_track.isEmpty()) {
                     tracklist.add(single_track);
                     loop = false;
                 } else {
-                    System.out.println("INPUT ERROR - Please provide at least 1 Artist name");
+                    System.out.println("INPUT ERROR - Please provide at least 1 Track name");
                 }
             }
 
             loop = true;
             while (loop) {
-                Scanner input_Track_list = new Scanner(System.in);
-                System.out.println("please provide additional TRACK of the Artist " + name + "\n Track List:");
-                for (String s : tracklist) {
-                    System.out.println(s);
+                Scanner input_Additional_Track = new Scanner(System.in);
+                System.out.println("please provide additional TRACK of the Artist " + artist + "\n Track List:");
+                for (String t : tracklist) {
+                    System.out.print(t + ", ");
                 }
-                System.out.println("Let empty if there is no more Artist to add");
-                single_track = input_Track_list.next();
+                System.out.println("Let empty if there is no more Track to add");
+                single_track = input_Additional_Track.nextLine();
                 if (!single_track.isEmpty()) {
                     tracklist.add(single_track);
                 } else {
@@ -683,17 +671,27 @@ public class MusicApplication {
                 }
             }
 
-            /* VALIDATE TRACK NAME IN LIST if EXIST or CREATE*/
+
+
+            /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
             for (int i = 0; i < tracklist.size(); i++) {
                 single_track = tracklist.get(i);
-                String track_id = as.getArtistByName(single_track).getId();
+                String track_id = "";
+                try{
+                    track_id = ts.getTrackByTitle(single_track).getId();
+                }
+                catch(IllegalArgumentException e){
+                    track_id = "";
+                }
+
                 if (track_id == null || track_id.isEmpty()){
+                    System.out.println(" ");
                     System.out.println("WARNING the Track " + single_track + " is not in the database");
                     loop = true;
                     while (loop) {
-                        Scanner input = new Scanner(System.in);
-                        System.out.println("Do you want to add this track now?\n Y - N");
-                        String ans = input.nextLine().toUpperCase().trim();
+                        Scanner input_Track_list = new Scanner(System.in);
+                        System.out.println("Do you want to add this artist now?");
+                        String ans = input_Track_list.next().toUpperCase().trim();
                         switch (ans) {
                             case "Y","YES":
                                 if (updateTrack(single_track)) {
