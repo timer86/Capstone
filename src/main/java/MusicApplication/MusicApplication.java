@@ -110,6 +110,7 @@ public class MusicApplication {
         String album = "";
         String t_title = "";
         String genre = "";
+        String ans_AR;
         int yyyy = 1900;
         boolean choose = false;
         boolean loop;
@@ -425,7 +426,7 @@ public class MusicApplication {
                             /*YEAR - ALLOWED ONLY 1900 - today*/
                             loop2 = true;
                             while (loop2) {
-                                int new_yyyy = 1900;
+                                int new_yyyy;
                                 try {
                                     System.out.print("Please provide the new YEAR");
                                     Scanner input_Year = new Scanner(System.in);
@@ -512,12 +513,10 @@ public class MusicApplication {
                                         String ans = input.nextLine().toUpperCase().trim();
                                         switch (ans) {
                                             case "Y", "YES":
-                                                loop2 = false;
-                                                loop = updateArtist(single_artist);
+                                                loop2 = updateArtist(single_artist);
                                             case "N", "NO":
                                                 artistlist.remove(i);
                                                 loop2 = false;
-                                                loop = false;
                                             default:
                                                 System.out.println("INPUT ERROR - Please enter only YES/NO");
                                         }
@@ -579,14 +578,15 @@ public class MusicApplication {
 
         Scanner input_AR = new Scanner(System.in);
 
-        String ans_AR = "";
+
         String a_name = "";
         String a_genre = "";
         boolean choose = false;
-        boolean loop = false;
+        boolean loop;
         boolean updateAR = false;
+        String ans_AR;
 
-        List<String> tracklist = new ArrayList<String>();
+        List<String> tracklist = new ArrayList<>();
         String single_track = "";
 
 
@@ -723,6 +723,18 @@ public class MusicApplication {
 
             }
 
+
+            Artist existingArtist = artistdao.getArtistById(artist_id);
+            if (existingArtist == null) {
+                // Non esiste, quindi crea
+                as.createArtist(artist_id, name, a_genre, tracklist);
+            } else {
+                // Esiste, quindi aggiorna
+                Artist upd_artist = new Artist(artist_id, name, a_genre, tracklist);
+                as.updateArtist(upd_artist);
+            }
+
+            /*
             try{
                 Artist upd_artist = new Artist(artist_id,name,a_genre, tracklist);
                 as.updateArtist(upd_artist);
@@ -730,6 +742,7 @@ public class MusicApplication {
             catch(IllegalArgumentException e){
                 as.createArtist(artist_id,name,a_genre, tracklist);
             }
+            */
 
             if (!updateAR){
                 loop=true;
