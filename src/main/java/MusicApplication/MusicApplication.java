@@ -578,7 +578,7 @@ public class MusicApplication {
 
         String ans_AR = "";
         String a_name = "";
-        String genre = "";
+        String a_genre = "";
         boolean choose = false;
         boolean loop = false;
         boolean updateAR = false;
@@ -637,12 +637,12 @@ public class MusicApplication {
             while (loop) {
                 Scanner input_Genre = new Scanner(System.in);
                 System.out.println("Please provide the GENRE of the Artist " + name);
-                genre = input_Genre.next().trim().toUpperCase();
-                if (MusicGenres.ALLOWED_GENRES.contains(genre)) {
+                a_genre = input_Genre.next().trim().toUpperCase();
+                if (MusicGenres.ALLOWED_GENRES.contains(a_genre)) {
                     loop = false;
                 } else {
                     System.out.println("INPUT ERROR");
-                    System.out.println("Genre " + genre + " is not allowed\nPlease enter a valid Genre from the list:\n");
+                    System.out.println("Genre " + a_genre + " is not allowed\nPlease enter a valid Genre from the list:\n");
                     for (int i = 0; i < MusicGenres.ALLOWED_GENRES.size(); i++) {
                         if (i % 5 ==0 && i>5) {
                             System.out.println(" ");
@@ -660,27 +660,14 @@ public class MusicApplication {
             /*ARTIST LIST - EMPTY to finish*/
             loop = true;
             while (loop) {
-                Scanner input_Track = new Scanner(System.in);
-                System.out.println(" ");
-                System.out.println("Please provide the TRACK of the Artist " + name);
-                single_track = input_Track.nextLine();
-                /* 1st Artist cannot be empty*/
-                if (!single_track.isEmpty()) {
-                    tracklist.add(single_track);
-                    loop = false;
-                } else {
-                    System.out.println("INPUT ERROR - Please provide at least 1 Track name");
-                }
-            }
-
-            loop = true;
-            while (loop) {
                 Scanner input_Additional_Track = new Scanner(System.in);
-                System.out.println("please provide additional TRACK of the Artist " + name + "\n Track List:");
+                System.out.println(" ");
+                System.out.println("Please provide the TRACK list of the Artist " + name);
+                System.out.println("Let empty if there is no Track to add");
+                System.out.println("Track List:");
                 for (String t : tracklist) {
                     System.out.print(t + ", ");
                 }
-                System.out.println("Let empty if there is no more Track to add");
                 single_track = input_Additional_Track.nextLine();
                 if (!single_track.isEmpty()) {
                     tracklist.add(single_track);
@@ -690,8 +677,9 @@ public class MusicApplication {
             }
 
 
+            /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE
+               if tracklist is empty the app will no enter in the for loop */
 
-            /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
             for (int i = 0; i < tracklist.size(); i++) {
                 single_track = tracklist.get(i);
                 String track_id = "";
@@ -732,7 +720,7 @@ public class MusicApplication {
 
             }
 
-            Artist upd_artist = new Artist(artist_id,name,genre, tracklist);
+            Artist upd_artist = new Artist(artist_id,name,a_genre, tracklist);
             as.updateArtist(upd_artist);
 
             if (!updateAR){
