@@ -21,7 +21,7 @@ import java.util.InputMismatchException;
 
 public class MusicApplication {
     public static void main(String[] args) {
-        String ans="";
+        String ans;
         Scanner input = new Scanner(System.in);
 
         for(int i=1 ; i<=10 ; i++){
@@ -63,7 +63,7 @@ public class MusicApplication {
     }
     public static Boolean updateMusicMenu (){
         Scanner input_UM = new Scanner(System.in);
-        String ans_UM = "";
+        String ans_UM;
         boolean choose = false;
         System.out.println(" ");
         for(int i=1 ; i<=10 ; i++){
@@ -106,17 +106,18 @@ public class MusicApplication {
     public static Boolean updateTrack (String title) {
 
 
-        String ans_TR = "";
+        String ans_TR;
         String album = "";
         String t_title = "";
         String genre = "";
         int yyyy = 1900;
         boolean choose = false;
-        boolean loop = true;
-        boolean updateTR = false;
+        boolean loop;
+        boolean loop2;
+        boolean updateTR;
 
-        List<String> artistlist = new ArrayList<String>();
-        String single_artist = "";
+        List<String> artistlist = new ArrayList<>();
+        String single_artist;
 
         System.out.println(" ");
         for (int i = 1; i <= 10; i++) {
@@ -129,7 +130,7 @@ public class MusicApplication {
         System.out.println(" ");
         boolean update_TR_loop = true;
         while (update_TR_loop) {
-            ans_TR = "2";/*By Default we set ans_TR = 2 because is a variable used to mark Create a New Track*/
+            ans_TR = "2";/*By default we set ans_TR = 2 because is a variable used to mark Create a New Track*/
 
             /*TITLE - NOT ALLOWED EMPTY*/
             /*ASK TITLE if not received*/
@@ -157,7 +158,7 @@ public class MusicApplication {
             ArtistDAO artistdao = new inMemoryArtistDAO();
             TrackService ts = new TrackService(trackdao, artistdao);
             ArtistService as = new ArtistService(trackdao,artistdao);
-            String track_id = "";
+            String track_id;
             try {
                 track_id = ts.getTrackByTitle(title).getId();//getTrackByTitle return a Track, adding .getId() I retrieve only the id
             }
@@ -174,7 +175,7 @@ public class MusicApplication {
                     System.out.println("Year: " + track.getYear());
                     System.out.println("Album: " + track.getAlbum());
                     System.out.print("Artist list: ");
-                    List<String> artistidlist = new ArrayList<String>();
+                    List<String> artistidlist;
                     artistidlist = track.getArtistIds();
 
                     for (int i = 0; i < artistidlist.size(); i++) {
@@ -189,7 +190,7 @@ public class MusicApplication {
                             loop = false;
                             break;
                         case "2":
-                            boolean loop2 = true;
+                            loop2 = true;
                             while (loop2) {
                                 System.out.println("Please provide the TITLE of the Track " + title);
                                 String new_title = input_TR.nextLine().trim();
@@ -303,7 +304,7 @@ public class MusicApplication {
                 /* VALIDATE ARTIST NAME IN LIST if EXIST or CREATE*/
                 for (int i = 0; i < artistlist.size(); i++) {
                     single_artist = artistlist.get(i);
-                    String artist_id = "";
+                    String artist_id;
                     try{
                         artist_id = as.getArtistByName(single_artist).getId();
                     }
@@ -383,7 +384,7 @@ public class MusicApplication {
                     switch (ans_TR) {
                         case "1":
                             /*TITLE*/
-                            boolean loop2 = true;
+                            loop2 = true;
                             while (loop2) {
                                 System.out.println("Please provide a new TITLE of the Track" + title);
                                 String new_title = input_TR.nextLine().trim();
@@ -511,9 +512,11 @@ public class MusicApplication {
                                         String ans = input.nextLine().toUpperCase().trim();
                                         switch (ans) {
                                             case "Y", "YES":
+                                                loop2 = false;
                                                 loop = updateArtist(single_artist);
                                             case "N", "NO":
                                                 artistlist.remove(i);
+                                                loop2 = false;
                                                 loop = false;
                                             default:
                                                 System.out.println("INPUT ERROR - Please enter only YES/NO");
@@ -720,8 +723,13 @@ public class MusicApplication {
 
             }
 
-            Artist upd_artist = new Artist(artist_id,name,a_genre, tracklist);
-            as.updateArtist(upd_artist);
+            try{
+                Artist upd_artist = new Artist(artist_id,name,a_genre, tracklist);
+                as.updateArtist(upd_artist);
+            }
+            catch(IllegalArgumentException e){
+                as.createArtist(artist_id,name,a_genre, tracklist);
+            }
 
             if (!updateAR){
                 loop=true;
