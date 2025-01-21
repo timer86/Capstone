@@ -285,13 +285,14 @@ public class ArtistServiceTest {
         assertEquals("Artist with ID " + artistId + " does not exist", exception.getMessage());
     }
 
+
     @Test
-    public void testCreateArtist_EmptyTrackIds_ThrowsException() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                artistService.createArtist("A001", "System of a Down", "ROCK", List.of())
-        );
-        assertEquals("Track IDs cannot be null or empty", exception.getMessage());
+    public void testCreateArtist_EmptyTrackIds_AllowsEmpty() {
+        Artist artist = artistService.createArtist("A001", "System of a Down", "ROCK", List.of());
+        assertNotNull(artist);
+        assertTrue(artist.getTrackIds().isEmpty());
     }
+
 
 
     @Test

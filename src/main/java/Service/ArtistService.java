@@ -50,37 +50,35 @@ public class ArtistService {
             throw new IllegalArgumentException("Artist with ID " + id + " already exists");
         }
 
-        if (trackIds == null || trackIds.isEmpty()) {
-            throw new IllegalArgumentException("Track IDs cannot be null or empty");
+        if (trackIds == null) {
+            trackIds = new ArrayList<>();
         }
 
-        Set<String> uniqueTrackIds = new HashSet<>(trackIds);
+        if (artistDao.getArtistById(id) != null) {
+            throw new IllegalArgumentException("Artist with ID " + id + " already exists");
+        }
 
-        // Verifica che tutte le tracce esistano
-        for (String trackId : uniqueTrackIds) {
+        // Se la lista è vuota, non faccio il controllo sulle tracce
+        for (String trackId : trackIds) {
             Track track = trackDao.getTrackById(trackId);
             if (track == null) {
                 throw new IllegalArgumentException("The Track with ID: " + trackId + " does not exist");
             }
         }
 
-        // Crea il nuovo artista
-        Artist newArtist = new Artist(id, name, genre,trackIds);
-        newArtist.setTrackIds(List.copyOf(uniqueTrackIds));
+        Artist newArtist = new Artist(id, name, genre, trackIds);
+        artistDao.createArtist(newArtist);
 
-        // Salva l'artista nel DAO
-        Artist savedArtist = artistDao.createArtist(newArtist);
-
-        // Aggiorna le tracce per aggiungere l'artista appena creato
-        for (String trackId : uniqueTrackIds) {
+        // Aggiungo l'artista a tutte le track
+        for (String trackId : trackIds) {
             Track track = trackDao.getTrackById(trackId);
-            if (track != null && !track.getArtistIds().contains(id)) {
-                track.addArtistID(id); // Aggiunge l'ID dell'artista alla traccia
-                trackDao.updateTrack(track); // Salva la traccia aggiornata
+            if (!track.getArtistIds().contains(id)) {
+                track.addArtistID(id);
+                trackDao.updateTrack(track);
             }
         }
 
-        return savedArtist;
+        return newArtist;
     }
 
     private String generateArtistId(String name) {
